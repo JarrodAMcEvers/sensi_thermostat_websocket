@@ -1,0 +1,19 @@
+{
+  "name": "sensi_thermostat_websocket",
+  "version": "0.0.1",
+  "description": "",
+  "author": "jarrodamcevers@gmail.com",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "socket.io-client": "1.5.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "faker": "^4.1.0",
+    "jest": "latest"
+  }
+}
