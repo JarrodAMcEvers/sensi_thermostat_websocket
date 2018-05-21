@@ -5,11 +5,11 @@ jest.mock('socket.io-client', () => {
   return mock;
 });
 let endpoint = faker.internet.url();
-let socket = require('socket.io-client');
-jest.mock('../src/config.js', () => {
+let socket   = require('socket.io-client');
+let config = jest.mock('../src/config.js', () => {
   return {
     endpoint: endpoint
-  }
+  };
 });
 
 let app = require('../src/app.js');
