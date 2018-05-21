@@ -14,9 +14,20 @@ let config = jest.mock('../src/config.js', () => {
 
 let app = require('../src/app.js');
 
-test('calls socketio client with the correct params', () => {
-  return app.start()
-    .then(() => {
-      expect(mock.mock.calls[0][0]).toBe(endpoint);
-    });
+describe('start', () => {
+  test('calls socketio client with correct params', () => {
+    let accessToken = faker.random.uuid();
+    return app.start(accessToken)
+      .then(() => {
+        let mockArgs = mock.mock.calls[0];
+        expect(mockArgs[0]).toBe(endpoint);
+
+        // deep equal check
+        expect(mockArgs[1]).toEqual({
+          transports: ['websocket'],
+          path: '/thermostat',
+          extraHeaders: { Authorization: `Bearer ${accessToken}` }
+        });
+      });
+  });
 });
