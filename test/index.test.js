@@ -12,7 +12,7 @@ describe('index', () => {
   let startMock = jest.fn();
   let app = jest.mock('../src/app.js', () => {
     return {
-      start: startMock
+      startSocketConnection: startMock
     };
   });
 

@@ -23,7 +23,7 @@ describe('app', () => {
 
     test('calls socketio client with correct params', () => {
       let accessToken = faker.random.uuid();
-      return app.start(accessToken)
+      return app.startSocketConnection(accessToken)
         .then(() => {
           let mockArgs = mock.mock.calls[0];
           expect(mockArgs[0]).toBe(endpoint);
@@ -39,7 +39,7 @@ describe('app', () => {
 
     test('returns socket', () => {
       let accessToken = faker.random.uuid();
-      return app.start(accessToken)
+      return app.startSocketConnection(accessToken)
         .then(socket => {
           expect(socket).toEqual(socketObject);
         });
