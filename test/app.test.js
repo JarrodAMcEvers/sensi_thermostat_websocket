@@ -11,7 +11,7 @@ describe('app', () => {
   let endpoint = faker.internet.url();
   let config = jest.mock('../src/config.js', () => {
     return {
-      endpoint: endpoint
+      socket_endpoint: endpoint
     };
   });
 
