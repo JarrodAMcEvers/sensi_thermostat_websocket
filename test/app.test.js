@@ -3,13 +3,14 @@ let faker = require('faker');
 describe('app', () => {
   let app = {};
 
-  const mock = jest.fn();
+  let socketObject = faker.random.number();
+  let mock         = jest.fn(() => socketObject);
   jest.mock('socket.io-client', () => {
     return mock;
   });
 
   let endpoint = faker.internet.url();
-  let config = jest.mock('../src/config.js', () => {
+  let config   = jest.mock('../src/config.js', () => {
     return {
       socket_endpoint: endpoint
     };
@@ -35,6 +36,13 @@ describe('app', () => {
           });
         });
     });
-  });
 
+    test('returns socket', () => {
+      let accessToken = faker.random.uuid();
+      return app.start(accessToken)
+        .then(socket => {
+          expect(socket).toEqual(socketObject);
+        });
+    });
+  });
 });
