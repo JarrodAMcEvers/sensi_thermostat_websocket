@@ -8,6 +8,12 @@
     "start": "node src/index.js",
     "test": "jest"
   },
+  "jest": {
+    "clearMocks": true,
+    "collectCoverage": true,
+    "coverageReporters": ["json", "html"],
+    "coverageDirectory": "./coverage/"
+  },
   "dependencies": {
     "socket.io-client": "1.5.1"
   },
