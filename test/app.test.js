@@ -6,13 +6,13 @@ describe('app', () => {
   let socketObject = jest.fn();
   socketObject.on  = jest.fn();
 
-  let mock = jest.fn(() => socketObject);
-  jest.mock('socket.io-client', () => mock);
+  let mockSocket = jest.fn(() => socketObject);
+  jest.mock('socket.io-client', () => mockSocket);
 
-  let endpoint = faker.internet.url();
-  let config   = jest.mock('../src/config.js', () => {
+  let mockEndpoint = faker.internet.url();
+  jest.mock('../src/config.js', () => {
     return {
-      socket_endpoint: endpoint
+      socket_endpoint: mockEndpoint
     };
   });
 
@@ -25,8 +25,8 @@ describe('app', () => {
       let accessToken = faker.random.uuid();
       return app.startSocketConnection(accessToken)
         .then(() => {
-          let mockArgs = mock.mock.calls[0];
-          expect(mockArgs[0]).toBe(endpoint);
+          let mockArgs = mockSocket.mock.calls[0];
+          expect(mockArgs[0]).toBe(mockEndpoint);
 
           // deep equal check
           expect(mockArgs[1]).toEqual({
