@@ -8,5 +8,11 @@ exports.startSocketConnection = accessToken => {
     extraHeaders: { Authorization: `Bearer ${accessToken}` }
   });
 
+  socket.on('connected', this.connectHandler);
+
   return Promise.resolve(socket);
+};
+
+exports.connectHandler = data => {
+  console.log(data);
 };
