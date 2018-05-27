@@ -9,6 +9,7 @@ exports.startSocketConnection = accessToken => {
   });
 
   socket.on('connected', this.connectHandler);
+  socket.on('disconnect', this.disconnectHandler);
 
   return Promise.resolve(socket);
 };

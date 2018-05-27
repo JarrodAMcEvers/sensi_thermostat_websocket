@@ -35,12 +35,21 @@ describe('app', () => {
         });
     });
 
-    test('sets up socket handlers', () => {
-      let accessToken = faker.random.uuid();
+    test('sets up connected socket handler', () => {
+      let accessToken    = faker.random.uuid();
       app.connectHandler = jest.fn();
       return app.startSocketConnection(accessToken)
         .then(() => {
           expect(socketObject.on).toBeCalledWith('connected', app.connectHandler);
+        });
+    });
+
+    test('sets up disconnect socket handler', () => {
+      let accessToken       = faker.random.uuid();
+      app.disconnectHandler = jest.fn();
+      return app.startSocketConnection(accessToken)
+        .then(() => {
+          expect(socketObject.on).toBeCalledWith('disconnect', app.disconnectHandler);
         });
     });
 
