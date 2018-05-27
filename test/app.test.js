@@ -1,6 +1,10 @@
 let faker = require('faker');
 
 describe('app', () => {
+  beforeEach(() => {
+    jest.resetModules();
+  });
+
   let app = {};
 
   let socketObject = jest.fn();
@@ -9,8 +13,8 @@ describe('app', () => {
   let mockSocket = jest.fn(() => socketObject);
   jest.mock('socket.io-client', () => mockSocket);
 
-  let mockEndpoint = faker.internet.url();
-  let mockConfig = jest.fn();
+  let mockEndpoint           = faker.internet.url();
+  let mockConfig             = jest.fn();
   mockConfig.socket_endpoint = mockEndpoint;
   jest.mock('../src/config.js', () => mockConfig);
 
@@ -58,6 +62,35 @@ describe('app', () => {
       return app.startSocketConnection(accessToken)
         .then(socket => {
           expect(socket).toEqual(socketObject);
+        });
+    });
+  });
+
+  describe('connectHandler', () => {
+    beforeEach(() => {
+      console.log = jest.fn();
+      app         = require('../src/app.js');
+    });
+
+    test('logs', () => {
+      return app.connectHandler()
+        .then(() => {
+          expect(console.log).toBeCalledWith('connected');
+        });
+    });
+  });
+
+  describe('connectHandler', () => {
+    beforeEach(() => {
+      console.error = jest.fn();
+      app         = require('../src/app.js');
+    });
+
+    test('logs error', () => {
+      let error = new Error(faker.lorem.word());
+      return app.disconectHandler(error)
+        .then(() => {
+          expect(console.error).toBeCalledWith('disconnected', error);
         });
     });
   });

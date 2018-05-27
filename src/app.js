@@ -14,6 +14,10 @@ exports.startSocketConnection = accessToken => {
   return Promise.resolve(socket);
 };
 
-exports.connectHandler = data => {
-  console.log(data);
+exports.connectHandler = async () => {
+  console.log('connected');
+};
+
+exports.disconectHandler = async function(err) {
+  console.error('disconnected', err);
 };
