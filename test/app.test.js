@@ -10,11 +10,9 @@ describe('app', () => {
   jest.mock('socket.io-client', () => mockSocket);
 
   let mockEndpoint = faker.internet.url();
-  jest.mock('../src/config.js', () => {
-    return {
-      socket_endpoint: mockEndpoint
-    };
-  });
+  let mockConfig = jest.fn();
+  mockConfig.socket_endpoint = mockEndpoint;
+  jest.mock('../src/config.js', () => mockConfig);
 
   describe('start', () => {
     beforeEach(() => {
