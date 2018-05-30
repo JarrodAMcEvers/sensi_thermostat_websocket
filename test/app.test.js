@@ -106,7 +106,7 @@ describe('app', () => {
     });
   });
 
-  describe('connectHandler', () => {
+  describe('disconnectHandler', () => {
     beforeEach(() => {
       console.error = jest.fn();
       app         = require('../src/app.js');
@@ -114,7 +114,7 @@ describe('app', () => {
 
     test('logs error', () => {
       let error = new Error(faker.lorem.word());
-      return app.disconectHandler(error)
+      return app.disconnectHandler(error)
         .then(() => {
           expect(console.error).toBeCalledWith('disconnected', error);
         });
