@@ -13,6 +13,10 @@ describe('app', () => {
   let mockSocket = jest.fn(() => socketObject);
   jest.mock('socket.io-client', () => mockSocket);
 
+  let mockAuthorization = {};
+  mockAuthorization.getAccessToken = jest.fn();
+  jest.mock('../src/authorization.js', () => mockAuthorization);
+
   let mockEndpoint           = faker.internet.url();
   let mockConfig             = jest.fn();
   mockConfig.socket_endpoint = mockEndpoint;
@@ -36,6 +40,13 @@ describe('app', () => {
             path: '/thermostat',
             extraHeaders: { Authorization: `Bearer ${accessToken}` }
           });
+        });
+    });
+
+    test('if access token is undefined, call authorization.getAccessToken', () => {
+      return app.startSocketConnection(undefined)
+        .then(() => {
+          expect(mockAuthorization.getAccessToken).toHaveBeenCalled();
         });
     });
 
