@@ -2,7 +2,11 @@ let socketIO      = require('socket.io-client');
 let authorization = require('./authorization.js');
 let config        = require('./config.js');
 
-let checkToken = accessToken => !accessToken ? authorization.getAccessToken() : accessToken;
+let checkToken = async accessToken => {
+  return !accessToken
+    ? authorization.getAccessToken()
+    : accessToken;
+};
 
 exports.startSocketConnection = accessToken => {
   accessToken = checkToken(accessToken);
