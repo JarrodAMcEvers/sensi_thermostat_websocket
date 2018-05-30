@@ -44,6 +44,21 @@ describe('app', () => {
     });
 
     test('if access token is undefined, call authorization.getAccessToken', () => {
+      let token = faker.random.uuid();
+      mockAuthorization.getAccessToken = jest.fn(() => token);
+      return app.startSocketConnection(undefined)
+        .then(() => {
+          let mockArgs = mockSocket.mock.calls[0][1];
+
+          expect(mockArgs).toEqual({
+            transports: ['websocket'],
+            path: '/thermostat',
+            extraHeaders: { Authorization: `Bearer ${token}` }
+          });
+        });
+    });
+
+    test('calls socketio client with access token from getAccessToken', () => {
       return app.startSocketConnection(undefined)
         .then(() => {
           expect(mockAuthorization.getAccessToken).toHaveBeenCalled();
