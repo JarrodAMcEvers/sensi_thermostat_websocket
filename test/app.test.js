@@ -50,6 +50,13 @@ describe('app', () => {
         });
     });
 
+    test('does not call authorization.getAccessToken if token is !undefined', () => {
+      return app.startSocketConnection('some token')
+        .then(() => {
+          expect(mockAuthorization.getAccessToken).toHaveBeenCalledTimes(0);
+        });
+    });
+
     test('calls socketio client with access token from getAccessToken', () => {
       let token = faker.random.uuid();
       mockAuthorization.getAccessToken = jest.fn(() => Promise.resolve(token));
