@@ -44,6 +44,13 @@ describe('app', () => {
     });
 
     test('if access token is undefined, call authorization.getAccessToken', () => {
+      return app.startSocketConnection(undefined)
+        .then(() => {
+          expect(mockAuthorization.getAccessToken).toHaveBeenCalled();
+        });
+    });
+
+    test('calls socketio client with access token from getAccessToken', () => {
       let token = faker.random.uuid();
       mockAuthorization.getAccessToken = jest.fn(() => Promise.resolve(token));
       return app.startSocketConnection(undefined)
@@ -55,13 +62,6 @@ describe('app', () => {
             path: '/thermostat',
             extraHeaders: { Authorization: `Bearer ${token}` }
           });
-        });
-    });
-
-    test('calls socketio client with access token from getAccessToken', () => {
-      return app.startSocketConnection(undefined)
-        .then(() => {
-          expect(mockAuthorization.getAccessToken).toHaveBeenCalled();
         });
     });
 
