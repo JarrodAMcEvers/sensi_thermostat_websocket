@@ -11,15 +11,20 @@
   "jest": {
     "clearMocks": true,
     "collectCoverage": true,
-    "coverageReporters": ["json", "html"],
+    "coverageReporters": [
+      "json",
+      "html"
+    ],
     "coverageDirectory": "./coverage/"
   },
   "dependencies": {
     "socket.io-client": "1.5.1"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "faker": "^4.1.0",
-    "jest": "latest"
+    "chai": "3.5.0",
+    "faker": "4.1.0",
+    "jest": "latest",
+    "nock": "^9.3.2",
+    "request": "^2.87.0"
   }
 }
