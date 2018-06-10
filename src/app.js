@@ -28,6 +28,6 @@ exports.connectHandler = async () => {
   console.log('connected');
 };
 
-exports.disconnectHandler = async function (err) {
+exports.disconnectHandler = async err => {
   console.error('disconnected', err);
 };
