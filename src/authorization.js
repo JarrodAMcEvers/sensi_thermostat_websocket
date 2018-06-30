@@ -14,6 +14,9 @@ exports.getAccessToken = async () => {
   }})
     .then(res => {
       let body = JSON.parse(res.body);
+      if (res.statusCode === 400) {
+        return Promise.reject(body);
+      }
       return body.access_token;
   });
 };

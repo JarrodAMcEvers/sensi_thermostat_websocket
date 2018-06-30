@@ -37,5 +37,20 @@ describe('authorization', () => {
           tokenMock.done();
         });
     });
+
+    test('rejects with error if statusCode is a 400', () => {
+      let error = faker.lorem.word();
+      nock(mockConfig.token_endpoint)
+        .post('/token')
+        .reply(400, { error: error });
+
+      return authorization.getAccessToken()
+        .then(() => {
+          expect(true).toBeFalsy();
+        })
+        .catch(err => {
+          expect(err).toEqual({ error: error });
+        });
+    });
   });
 });
