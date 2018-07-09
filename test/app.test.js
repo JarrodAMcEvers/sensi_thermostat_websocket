@@ -14,7 +14,7 @@ describe('app', () => {
   jest.mock('socket.io-client', () => mockSocket);
 
   let mockAuthorization = {};
-  mockAuthorization.getAccessToken = jest.fn(() => Promise.resolve(777));
+  mockAuthorization.getTokens = jest.fn(() => Promise.resolve(777));
   jest.mock('../src/authorization.js', () => mockAuthorization);
 
   let mockEndpoint           = faker.internet.url();
@@ -43,23 +43,23 @@ describe('app', () => {
         });
     });
 
-    test('if access token is undefined, call authorization.getAccessToken', () => {
+    test('if access token is undefined, call authorization.getTokens', () => {
       return app.startSocketConnection(undefined)
         .then(() => {
-          expect(mockAuthorization.getAccessToken).toHaveBeenCalled();
+          expect(mockAuthorization.getTokens).toHaveBeenCalled();
         });
     });
 
-    test('does not call authorization.getAccessToken if token is !undefined', () => {
+    test('does not call authorization.getTokens if token is !undefined', () => {
       return app.startSocketConnection('some token')
         .then(() => {
-          expect(mockAuthorization.getAccessToken).toHaveBeenCalledTimes(0);
+          expect(mockAuthorization.getTokens).toHaveBeenCalledTimes(0);
         });
     });
 
-    test('calls socketio client with access token from getAccessToken', () => {
+    test('calls socketio client with access token from getTokens', () => {
       let token = faker.random.uuid();
-      mockAuthorization.getAccessToken = jest.fn(() => Promise.resolve(token));
+      mockAuthorization.getTokens = jest.fn(() => Promise.resolve({ access_token: token }));
       return app.startSocketConnection(undefined)
         .then(() => {
           let mockArgs = mockSocket.mock.calls[0][1];

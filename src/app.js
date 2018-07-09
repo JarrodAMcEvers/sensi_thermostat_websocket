@@ -4,7 +4,7 @@ let config        = require('./config.js');
 
 let checkToken = async accessToken => {
   return !accessToken
-    ? await authorization.getAccessToken()
+    ? await authorization.getTokens().then(tokens => tokens.access_token)
     : accessToken;
 };
 
