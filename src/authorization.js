@@ -4,7 +4,7 @@ let util    = require('util');
 
 let post = util.promisify(request.post);
 
-exports.getAccessToken = async () => {
+exports.getTokens = async () => {
   return await post(`${config.token_endpoint}/token`, {
     form: {
       grant_type: 'password',
@@ -19,6 +19,6 @@ exports.getAccessToken = async () => {
       if (res.statusCode === 400) {
         return Promise.reject(body);
       }
-      return body.access_token;
+      return { access_token: body.access_token, refresh_token: body.refresh_token };
     });
 };

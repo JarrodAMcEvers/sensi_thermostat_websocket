@@ -13,14 +13,16 @@ describe('authorization', () => {
   mockConfig.client_secret  = faker.random.uuid();
   jest.mock('../src/config.js', () => mockConfig);
 
-  describe('getAccessToken', () => {
+  describe('getTokens', () => {
     beforeEach(() => {
       nock.cleanAll();
       authorization = require('../src/authorization.js');
     });
 
     test('call endpoint and return token', () => {
-      let tokenFromEndpoint = faker.random.uuid();
+      let accessToken = faker.random.uuid();
+      let refreshToken = faker.random.uuid();
+
       let tokenMock         = nock(mockConfig.token_endpoint)
         .post('/token', {
           grant_type: 'password',
@@ -29,11 +31,11 @@ describe('authorization', () => {
           username: mockConfig.username,
           password: mockConfig.password
         })
-        .reply(200, { access_token: tokenFromEndpoint });
+        .reply(200, { access_token: accessToken, refresh_token: refreshToken });
 
-      return authorization.getAccessToken()
+      return authorization.getTokens()
         .then(token => {
-          expect(token).toBe(tokenFromEndpoint);
+          expect(token).toEqual({ access_token: accessToken, refresh_token: refreshToken });
           tokenMock.done();
         });
     });
@@ -44,7 +46,7 @@ describe('authorization', () => {
         .post('/token')
         .reply(400, { error: error });
 
-      return authorization.getAccessToken()
+      return authorization.getTokens()
         .then(() => {
           expect(true).toBeFalsy();
         })
