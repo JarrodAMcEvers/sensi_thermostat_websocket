@@ -136,4 +136,19 @@ describe('app', () => {
         });
     });
   });
+
+  describe('errorHandler', () => {
+    beforeEach(() => {
+      console.error = jest.fn();
+      app         = require('../src/app.js');
+    });
+
+    test('logs error', () => {
+      let error = new Error(faker.lorem.word());
+      return app.errorHandler(error)
+        .then(() => {
+          expect(console.error).toBeCalledWith('error', error);
+        });
+    });
+  });
 });
