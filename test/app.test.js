@@ -90,6 +90,15 @@ describe('app', () => {
         });
     });
 
+    test('sets up error socket handler', () => {
+      let accessToken       = faker.random.uuid();
+      app.errorHandler = jest.fn();
+      return app.startSocketConnection(accessToken)
+        .then(() => {
+          expect(socketObject.on).toBeCalledWith('error', app.errorHandler);
+        });
+    });
+
     test('returns socket', () => {
       let accessToken = faker.random.uuid();
       return app.startSocketConnection(accessToken)

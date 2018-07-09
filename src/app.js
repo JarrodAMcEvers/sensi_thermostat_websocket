@@ -19,6 +19,7 @@ exports.startSocketConnection = accessToken => {
 
       socket.on('connected', this.connectHandler);
       socket.on('disconnect', this.disconnectHandler);
+      socket.on('error', this.errorHandler);
 
       return Promise.resolve(socket);
     });
