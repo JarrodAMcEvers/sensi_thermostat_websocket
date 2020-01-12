@@ -3,10 +3,9 @@
   "version": "0.0.1",
   "description": "",
   "author": "jarrodamcevers@gmail.com",
-  "main": "src/app.js",
   "scripts": {
     "start": "node src/index.js",
-    "test": "jest"
+    "test": "./node_modules/jest/bin/jest.js"
   },
   "jest": {
     "clearMocks": true,
