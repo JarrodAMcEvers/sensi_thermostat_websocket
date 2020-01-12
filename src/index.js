@@ -1,5 +1,5 @@
-let app    = require('./app.js');
-let config = require('./config.js');
+const app    = require('./app.js');
+const config = require('./config.js');
 
 app.startSocketConnection(config.access_token)
   .catch(err => {
