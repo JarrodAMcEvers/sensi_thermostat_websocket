@@ -1,1 +1,1 @@
-# sensi_thermostat_websocket
+# Sensi Thermostat Websocket
