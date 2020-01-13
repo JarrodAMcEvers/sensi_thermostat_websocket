@@ -1,0 +1,19 @@
+{
+  "project": "sensi_thermostat_websocket",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "types": ["jest", "node"],
+    "module": "commonjs",
+    "target": "es6",
+    "lib": ["es6"],
+    "sourceMap": true,
+    "allowJs": true
+  },
+  "include": [
+    "src/**/*",
+    "test/**/*"
+  ]
+}

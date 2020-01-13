@@ -1,5 +1,5 @@
-const app    = require('./app.js');
-const config = require('./config.js');
+import * as app from './app';
+import * as config from './config';
 
 app.startSocketConnection(config.access_token)
   .catch(err => {

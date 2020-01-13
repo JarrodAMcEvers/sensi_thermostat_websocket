@@ -1,7 +1,10 @@
-const socketIO = require('socket.io-client');
-const config = require('./config.js');
+import * as socketIO from 'socket.io-client';
+import * as config from './config';
 
-class Socket {
+export class Socket {
+  accessToken: string;
+  socketConnection: any;
+
   constructor(accessToken) {
     this.accessToken = accessToken;
     this.socketConnection = null;
@@ -22,5 +25,3 @@ class Socket {
     return this.socketConnection;
   }
 }
-
-module.exports = Socket;

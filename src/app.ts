@@ -1,6 +1,6 @@
-const socketIO = require('socket.io-client');
-const authorization = require('./authorization.js');
-const config = require('./config.js');
+import * as socketIO from 'socket.io-client';
+import * as authorization from './authorization';
+import * as config from './config';
 
 let checkToken = async accessToken => {
   return !accessToken
@@ -8,12 +8,12 @@ let checkToken = async accessToken => {
     : accessToken;
 };
 
-exports.startSocketConnection = async accessToken => {
+export async function startSocketConnection(accessToken) {
   const actualAccessToken = await checkToken(accessToken);
-  const socket = socketIO(config.socket_endpoint, {
+  const socket            = socketIO(config.socket_endpoint, {
     transports: ['websocket'],
     path: '/thermostat',
-    extraHeaders: { Authorization: `Bearer ${actualAccessToken}` }
+    extraHeaders: {Authorization: `Bearer ${actualAccessToken}`}
   });
 
   socket.on('connected', this.connectHandler);
@@ -23,14 +23,14 @@ exports.startSocketConnection = async accessToken => {
   return socket;
 };
 
-exports.connectHandler = async () => {
+export async function connectHandler() {
   console.log('connected');
 };
 
-exports.disconnectHandler = async err => {
+export async function disconnectHandler(err) {
   console.error('disconnected', err);
 };
 
-exports.errorHandler = async err => {
+export async function errorHandler(err) {
   console.error('error', err);
 };

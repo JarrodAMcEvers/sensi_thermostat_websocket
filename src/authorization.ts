@@ -1,10 +1,10 @@
-const request = require('request');
-const config = require('./config.js');
-const util = require('util');
+import * as request from 'request';
+import * as config from './config';
+import * as util from 'util';
 
 const post = util.promisify(request.post);
 
-exports.getTokens = async () => {
+export async function getTokens() {
   const response = await post(
     `${config.token_endpoint}/token`,
     {
@@ -22,5 +22,5 @@ exports.getTokens = async () => {
   if (response.statusCode === 400) {
     return Promise.reject(body);
   }
-  return { access_token: body.access_token, refresh_token: body.refresh_token };
+  return {access_token: body.access_token, refresh_token: body.refresh_token};
 };
