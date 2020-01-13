@@ -24,17 +24,24 @@ describe('app', () => {
     jest.resetModules();
   });
 
-  describe('start', () => {
+  describe('startSocketConnection', () => {
     beforeAll(() => {
       mockAuthorization.getTokens.mockResolvedValue(faker.random.number({min: 0, max: 1000}));
     });
 
-    test('calls socketio client with correct params', async () => {
+    test('get access token for socket connection', async () => {
+      await app.startSocketConnection();
+
+      expect(mockAuthorization.getTokens).toHaveBeenCalled();
+    });
+
+    test('properly creates socket connection', async () => {
       const accessToken = faker.random.uuid();
+      mockAuthorization.getTokens.mockResolvedValueOnce({ access_token: accessToken });
 
-      await app.startSocketConnection(accessToken);
+      await app.startSocketConnection();
 
-      const mockArgs: Array<2> = mockSocket.mock.calls[0];
+      const mockArgs: Array<any> = mockSocket.mock.calls[0];
       expect(mockArgs[0]).toBe(mockEndpoint);
 
       // deep equal check
@@ -45,36 +52,9 @@ describe('app', () => {
       });
     });
 
-    test('if access token is undefined, call authorization.getTokens', async () => {
-      await app.startSocketConnection(undefined);
-
-      expect(mockAuthorization.getTokens).toHaveBeenCalled();
-    });
-
-    test('does not call authorization.getTokens if token is !undefined', async () => {
-      await app.startSocketConnection('some token');
-
-      expect(mockAuthorization.getTokens).toHaveBeenCalledTimes(0);
-    });
-
-    test('calls socketio client with access token from getTokens', async () => {
-      let token                   = faker.random.uuid();
-      mockAuthorization.getTokens = jest.fn(() => Promise.resolve({access_token: token}));
-
-      await app.startSocketConnection(undefined);
-
-      let mockArgs: Array<any> = mockSocket.mock.calls[0];
-
-      expect(mockArgs[1]).toEqual({
-        transports: ['websocket'],
-        path: '/thermostat',
-        extraHeaders: {Authorization: `Bearer ${token}`}
-      });
-    });
-
     test('returns socket', async () => {
-      const accessToken = faker.random.uuid();
-      const socket      = await app.startSocketConnection(accessToken);
+      const socket      = await app.startSocketConnection();
+
       expect(socket).toEqual(socketObject);
     });
   });
