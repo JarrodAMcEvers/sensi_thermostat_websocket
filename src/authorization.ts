@@ -1,10 +1,11 @@
-import * as request from 'request';
 import * as config from './config';
+import {Tokens} from './types';
+import * as request from 'request';
 import * as util from 'util';
 
 const post = util.promisify(request.post);
 
-export async function getTokens() {
+export async function getTokens(): Promise<Tokens> {
   const response = await post(
     `${config.token_endpoint}/token`,
     {
@@ -22,5 +23,5 @@ export async function getTokens() {
   if (response.statusCode === 400) {
     return Promise.reject(body);
   }
-  return {access_token: body.access_token, refresh_token: body.refresh_token};
+  return <Tokens>{access_token: body.access_token, refresh_token: body.refresh_token};
 };
