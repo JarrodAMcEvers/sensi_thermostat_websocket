@@ -54,9 +54,9 @@ describe('app', () => {
     test('sets up connected, disconnect, and error handlers', async () => {
       await app.startSocketConnection();
 
-      expect(socketConnection.on).toBeCalledWith('connected', expect.any(Function));
-      expect(socketConnection.on).toBeCalledWith('disconnect', expect.any(Function));
-      expect(socketConnection.on).toBeCalledWith('error', expect.any(Function));
+      expect(socketConnection.on).toBeCalledWith('connected', app.connectHandler);
+      expect(socketConnection.on).toBeCalledWith('disconnect', app.disconnectHandler);
+      expect(socketConnection.on).toBeCalledWith('error', app.errorHandler);
     });
 
     test('returns socket', async () => {

@@ -12,14 +12,14 @@ export async function startSocketConnection() {
   return socket;
 }
 
-export async function connectHandler() {
+export function connectHandler() {
   console.log('connected');
 }
 
-export async function disconnectHandler(err) {
+export function disconnectHandler(err) {
   console.error('disconnected', err);
 }
 
-export async function errorHandler(err) {
+export function errorHandler(err) {
   console.error('error', err);
 }
