@@ -1,5 +1,5 @@
 import * as config from './config';
-import {Tokens} from './types';
+import {Tokens, SensiOAuthResponse} from './types';
 import * as request from 'request';
 import * as util from 'util';
 
@@ -19,7 +19,7 @@ export async function getTokens(): Promise<Tokens> {
     }
   );
 
-  const body = JSON.parse(response.body);
+  const body: SensiOAuthResponse = JSON.parse(response.body);
   if (response.statusCode === 400) {
     return Promise.reject(body);
   }
