@@ -1,14 +1,9 @@
-import * as socketIO from 'socket.io-client';
+import {Socket} from './socket';
 import * as authorization from './authorization';
-import * as config from './config';
 
 export async function startSocketConnection() {
   const accessToken = (await authorization.getTokens()).access_token;
-  const socket      = socketIO(config.socket_endpoint, {
-    transports: ['websocket'],
-    path: '/thermostat',
-    extraHeaders: {Authorization: `Bearer ${accessToken}`}
-  });
+  const socket      = new Socket(accessToken).socketConnection;
 
   socket.on('connected', this.connectHandler);
   socket.on('disconnect', this.disconnectHandler);

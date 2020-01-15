@@ -1,7 +1,7 @@
 import * as faker from 'faker';
 import * as nock from 'nock';
 
-let mockConfig = {
+const mockConfig = {
   token_endpoint: faker.internet.url(),
   username: faker.internet.userName(),
   password: faker.internet.password(),
@@ -9,6 +9,7 @@ let mockConfig = {
   client_secret: faker.random.uuid()
 };
 jest.mock('../src/config', () => mockConfig);
+
 import * as authorization from '../src/authorization';
 
 describe('authorization', () => {

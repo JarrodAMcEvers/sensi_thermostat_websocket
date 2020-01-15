@@ -3,7 +3,7 @@ import * as faker from 'faker';
 const socketObject = {
   on: jest.fn()
 };
-const mockSocket   = jest.fn(() => socketObject);
+const mockSocket = jest.fn(() => socketObject);
 jest.mock('socket.io-client', () => mockSocket);
 
 const mockAuthorization = {
@@ -12,21 +12,28 @@ const mockAuthorization = {
 jest.mock('../src/authorization', () => mockAuthorization);
 
 const mockEndpoint = faker.internet.url();
-const mockConfig   = {
+const mockConfig = {
   socket_endpoint: mockEndpoint
 };
 jest.mock('../src/config', () => mockConfig);
 
+const socketConnection = {
+  on: jest.fn()
+}
+const mockSocketObject = {
+  socketConnection
+};
+const socket = jest.fn().mockImplementation(() => mockSocketObject)
+jest.mock('../src/socket', () => {
+  return { Socket: socket };
+});
+
 import * as app from '../src/app';
 
 describe('app', () => {
-  beforeEach(() => {
-    jest.resetModules();
-  });
-
   describe('startSocketConnection', () => {
     beforeAll(() => {
-      mockAuthorization.getTokens.mockResolvedValue(faker.random.number({min: 0, max: 1000}));
+      mockAuthorization.getTokens.mockResolvedValue({ access_token: faker.random.number({ min: 0, max: 1000 }) });
     });
 
     test('get access token for socket connection', async () => {
@@ -41,21 +48,21 @@ describe('app', () => {
 
       await app.startSocketConnection();
 
-      const mockArgs: Array<any> = mockSocket.mock.calls[0];
-      expect(mockArgs[0]).toBe(mockEndpoint);
+      expect(socket).toBeCalledWith(accessToken);
+    });
 
-      // deep equal check
-      expect(mockArgs[1]).toEqual({
-        transports: ['websocket'],
-        path: '/thermostat',
-        extraHeaders: {Authorization: `Bearer ${accessToken}`}
-      });
+    test('sets up connected, disconnect, and error handlers', async () => {
+      await app.startSocketConnection();
+
+      expect(socketConnection.on).toBeCalledWith('connected', expect.any(Function));
+      expect(socketConnection.on).toBeCalledWith('disconnect', expect.any(Function));
+      expect(socketConnection.on).toBeCalledWith('error', expect.any(Function));
     });
 
     test('returns socket', async () => {
-      const socket      = await app.startSocketConnection();
+      const socketConnection = await app.startSocketConnection();
 
-      expect(socket).toEqual(socketObject);
+      expect(socketConnection).toEqual(mockSocketObject.socketConnection);
     });
   });
 });

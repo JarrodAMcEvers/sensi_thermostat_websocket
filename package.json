@@ -7,16 +7,6 @@
     "start": "node src/index.js",
     "test": "./node_modules/jest/bin/jest.js"
   },
-  "jest": {
-    "clearMocks": true,
-    "collectCoverage": true,
-    "coverageReporters": [
-      "json",
-      "html"
-    ],
-    "coverageDirectory": "./coverage/",
-    "preset": "ts-jest"
-  },
   "dependencies": {
     "@types/node": "12.7.12",
     "request": "2.88.0",
@@ -30,5 +20,15 @@
     "jest": "24.9.0",
     "nock": "11.7.2",
     "ts-jest": "24.0.2"
+  },
+  "jest": {
+    "clearMocks": true,
+    "collectCoverage": true,
+    "coverageReporters": [
+      "json",
+      "html"
+    ],
+    "coverageDirectory": "./coverage/",
+    "preset": "ts-jest"
   }
 }
