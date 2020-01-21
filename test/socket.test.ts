@@ -28,21 +28,23 @@ describe('socket', () => {
   });
   jest.setTimeout(2000);
 
-  test('return connection if it exists', () => {
+  test('return socket connection, if it exists', () => {
     let connection                = {
       on: jest.fn()
     };
     let socketObject              = new Socket('token');
     socketObject.socketConnection = connection;
 
-    expect(socketObject.connection).toEqual(connection);
+    const socketConnection = socketObject.start();
+
+    expect(socketConnection).toEqual(connection);
     expect(mockSocket).not.toHaveBeenCalled();
   });
 
-  test('create socket connection and returns it', () => {
+  test('creates socket connection and returns it', () => {
     let socketObject = new Socket(accessToken);
 
-    expect(socketObject.connection).toEqual(mockSocketObject);
+    expect(socketObject.start()).toEqual(mockSocketObject);
 
     let mockArgs: Array<2> = mockSocket.mock.calls[0];
     expect(mockArgs[0]).toBe(mockEndpoint);
@@ -56,7 +58,7 @@ describe('socket', () => {
   test('sets up connected, disconnect, and error handlers', async () => {
     const socketObject = new Socket(accessToken);
 
-    const connection = socketObject.connection;
+    const connection = socketObject.start();
 
     expect(connection.on).toHaveBeenCalledWith('connected', socketHelper.connectHandler);
     expect(connection.on).toHaveBeenCalledWith('disconnect', socketHelper.disconnectHandler);

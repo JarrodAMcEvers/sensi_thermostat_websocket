@@ -11,7 +11,7 @@ export class Socket {
     this.socketConnection = null;
   }
 
-  get connection() {
+  start() {
     if (!this.socketConnection) {
       this.socketConnection = socketIO(
         config.socket_endpoint,
