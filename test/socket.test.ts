@@ -12,21 +12,33 @@ const mockSocketObject = {
 const mockSocket = jest.fn(() => mockSocketObject);
 jest.mock('socket.io-client', () => mockSocket);
 
+const socketHelper = {
+  connectHandler: jest.fn(),
+  disconnectHandler: jest.fn(),
+  errorHandler: jest.fn(),
+};
+jest.mock('../src/socket_helper', () => socketHelper);
+
 import {Socket} from '../src/socket';
 
 describe('socket', () => {
+  let accessToken;
+  beforeEach(() => {
+    accessToken = faker.random.uuid();
+  });
   jest.setTimeout(2000);
 
   test('return connection if it exists', () => {
-    let connection                = faker.random.uuid();
+    let connection                = {
+      on: jest.fn()
+    };
     let socketObject              = new Socket('token');
     socketObject.socketConnection = connection;
+
     expect(socketObject.connection).toEqual(connection);
   });
 
   test('create socket connection and returns it', () => {
-    let accessToken  = faker.random.uuid();
-
     let socketObject = new Socket(accessToken);
 
     expect(socketObject.connection).toEqual(mockSocketObject);
@@ -38,5 +50,15 @@ describe('socket', () => {
       path: '/thermostat',
       extraHeaders: { Authorization: `Bearer ${accessToken}` }
     });
+  });
+
+  test('sets up connected, disconnect, and error handlers', async () => {
+    const socketObject = new Socket(accessToken);
+
+    const connection = socketObject.connection;
+
+    expect(connection.on).toHaveBeenCalledWith('connected', socketHelper.connectHandler);
+    expect(connection.on).toHaveBeenCalledWith('disconnect', socketHelper.disconnectHandler);
+    expect(connection.on).toHaveBeenCalledWith('error', socketHelper.errorHandler);
   });
 });

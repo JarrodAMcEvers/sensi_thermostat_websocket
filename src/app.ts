@@ -10,15 +10,3 @@ export async function startSocketConnection(): Promise<void> {
   socketConnection.on('disconnect', this.disconnectHandler);
   socketConnection.on('error', this.errorHandler);
 }
-
-export function connectHandler(): void {
-  console.log('connected');
-}
-
-export function disconnectHandler(err): void {
-  console.error('disconnected', err);
-}
-
-export function errorHandler(err): void {
-  console.error('error', err);
-}

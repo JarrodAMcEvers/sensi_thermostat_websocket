@@ -1,5 +1,6 @@
-import * as socketIO from 'socket.io-client';
+import * as socketHelper from './socket_helper';
 import * as config from './config';
+import * as socketIO from 'socket.io-client';
 
 export class Socket {
   accessToken: string;
@@ -21,6 +22,10 @@ export class Socket {
         }
       );
     }
+
+    this.socketConnection.on('connected', socketHelper.connectHandler);
+    this.socketConnection.on('disconnect', socketHelper.disconnectHandler);
+    this.socketConnection.on('error', socketHelper.errorHandler);
 
     return this.socketConnection;
   }
