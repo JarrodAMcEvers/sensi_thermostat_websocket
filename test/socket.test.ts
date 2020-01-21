@@ -36,6 +36,7 @@ describe('socket', () => {
     socketObject.socketConnection = connection;
 
     expect(socketObject.connection).toEqual(connection);
+    expect(mockSocket).not.toHaveBeenCalled();
   });
 
   test('create socket connection and returns it', () => {
