@@ -21,7 +21,7 @@ const socketConnection = {
   on: jest.fn()
 };
 const mockSocketObject = {
-  socketConnection
+  connection: socketConnection
 };
 const socket           = jest.fn().mockImplementation(() => mockSocketObject);
 jest.mock('../src/socket', () => {
