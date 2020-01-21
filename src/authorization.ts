@@ -1,5 +1,5 @@
-import * as config from './config';
 import {Tokens, SensiOAuthResponse} from './types';
+import * as config from './config';
 import * as request from 'request';
 import * as util from 'util';
 
@@ -24,4 +24,4 @@ export async function getTokens(): Promise<Tokens> {
     return Promise.reject(body);
   }
   return <Tokens>{access_token: body.access_token, refresh_token: body.refresh_token};
-};
+}
