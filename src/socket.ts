@@ -11,7 +11,7 @@ export class Socket {
     this.socketConnection = null;
   }
 
-  start() {
+  connectToSocket() {
     if (!this.socketConnection) {
       this.socketConnection = socketIO(
         config.socket_endpoint,
@@ -22,6 +22,10 @@ export class Socket {
         }
       );
     }
+  }
+
+  startSocketConnection() {
+    this.connectToSocket();
 
     this.socketConnection.on('connected', socketHelper.connectHandler);
     this.socketConnection.on('disconnect', socketHelper.disconnectHandler);

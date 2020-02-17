@@ -35,7 +35,7 @@ describe('socket', () => {
     let socketObject              = new Socket('token');
     socketObject.socketConnection = connection;
 
-    const socketConnection = socketObject.start();
+    const socketConnection = socketObject.startSocketConnection();
 
     expect(socketConnection).toEqual(connection);
     expect(mockSocket).not.toHaveBeenCalled();
@@ -44,7 +44,7 @@ describe('socket', () => {
   test('creates socket connection and returns it', () => {
     let socketObject = new Socket(accessToken);
 
-    expect(socketObject.start()).toEqual(mockSocketObject);
+    expect(socketObject.startSocketConnection()).toEqual(mockSocketObject);
 
     let mockArgs: Array<2> = mockSocket.mock.calls[0];
     expect(mockArgs[0]).toBe(mockEndpoint);
@@ -58,7 +58,7 @@ describe('socket', () => {
   test('sets up connected, disconnect, and error handlers', async () => {
     const socketObject = new Socket(accessToken);
 
-    const connection = socketObject.start();
+    const connection = socketObject.startSocketConnection();
 
     expect(connection.on).toHaveBeenCalledWith('connected', socketHelper.connectHandler);
     expect(connection.on).toHaveBeenCalledWith('disconnect', socketHelper.disconnectHandler);
