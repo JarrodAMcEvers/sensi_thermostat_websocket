@@ -1,5 +1,5 @@
 import * as socketHelper from './socket_helper';
-import * as config from './config';
+import * as config from '../config';
 import * as socketIO from 'socket.io-client';
 
 export class Socket {

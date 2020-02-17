@@ -4,7 +4,7 @@ let mockEndpoint           = faker.internet.url();
 let mockConfig            = {
   socket_endpoint: mockEndpoint
 };
-jest.mock('../src/config', () => mockConfig);
+jest.mock('../../src/config', () => mockConfig);
 
 const mockSocketObject = {
   on: jest.fn()
@@ -17,9 +17,9 @@ const socketHelper = {
   disconnectHandler: jest.fn(),
   errorHandler: jest.fn(),
 };
-jest.mock('../src/socket_helper', () => socketHelper);
+jest.mock('../../src/socket/socket_helper', () => socketHelper);
 
-import {Socket} from '../src/socket';
+import {Socket} from '../../src/socket/socket';
 
 describe('socket', () => {
   let accessToken;

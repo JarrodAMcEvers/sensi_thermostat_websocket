@@ -1,4 +1,4 @@
-import {Socket} from './socket';
+import {Socket} from './socket/socket';
 import {getTokens} from './authorization';
 
 export async function startSocketConnection(): Promise<void> {

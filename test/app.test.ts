@@ -24,7 +24,7 @@ const mockSocketObject = {
   startSocketConnection: jest.fn(() => socketConnection)
 };
 const socket           = jest.fn().mockImplementation(() => mockSocketObject);
-jest.mock('../src/socket', () => {
+jest.mock('../src/socket/socket', () => {
   return {Socket: socket};
 });
 
