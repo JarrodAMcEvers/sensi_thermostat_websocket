@@ -1,3 +1,7 @@
+export function stateHandler(): void {
+
+}
+
 export function connectHandler(): void {
   console.log('connected');
 }

@@ -16,17 +16,19 @@ const socketHelper = {
   connectHandler: jest.fn(),
   disconnectHandler: jest.fn(),
   errorHandler: jest.fn(),
+  stateHandler: jest.fn()
 };
 jest.mock('../../src/socket/socket_helper', () => socketHelper);
 
 import {Socket} from '../../src/socket/socket';
 
 describe('socket', () => {
+  jest.setTimeout(2000);
   let accessToken;
+
   beforeEach(() => {
     accessToken = faker.random.uuid();
   });
-  jest.setTimeout(2000);
 
   test('return socket connection, if it exists', () => {
     let connection                = {
@@ -60,8 +62,18 @@ describe('socket', () => {
 
     const connection = socketObject.startSocketConnection();
 
-    expect(connection.on).toHaveBeenCalledWith('connected', socketHelper.connectHandler);
+    expect(connection.on).toHaveBeenCalledWith('connected', expect.any(Function));
     expect(connection.on).toHaveBeenCalledWith('disconnect', socketHelper.disconnectHandler);
     expect(connection.on).toHaveBeenCalledWith('error', socketHelper.errorHandler);
+  });
+
+  test('listens for state messages after connecting', async () => {
+    const socketObject = new Socket(accessToken);
+
+    const connection = socketObject.startSocketConnection();
+    const handler = connection.on.mock.calls.find(x => x[0] === 'connected')[1];
+    await handler();
+
+    expect(connection.on).toHaveBeenCalledWith('state', socketHelper.stateHandler);
   });
 });

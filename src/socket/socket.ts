@@ -27,7 +27,10 @@ export class Socket {
   startSocketConnection() {
     this.connectToSocket();
 
-    this.socketConnection.on('connected', socketHelper.connectHandler);
+    this.socketConnection.on('connected', () => {
+      console.log('connected');
+      this.socketConnection.on('state', socketHelper.stateHandler);
+    });
     this.socketConnection.on('disconnect', socketHelper.disconnectHandler);
     this.socketConnection.on('error', socketHelper.errorHandler);
 
