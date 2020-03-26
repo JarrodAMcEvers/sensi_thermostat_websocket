@@ -1,9 +1,5 @@
-export function stateHandler(): void {
-
-}
-
-export function connectHandler(): void {
-  console.log('connected');
+export function stateHandler(data: any): void {
+  console.log(JSON.stringify(data));
 }
 
 export function disconnectHandler(err): void {
