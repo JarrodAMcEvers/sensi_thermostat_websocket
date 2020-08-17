@@ -9,13 +9,13 @@ jest.mock('socket.io-client', () => mockSocket);
 const mockAuthorization = {
   getTokens: jest.fn()
 };
-jest.mock('../src/authorization', () => mockAuthorization);
+jest.mock('../../src/authorization', () => mockAuthorization);
 
 const mockEndpoint = faker.internet.url();
 const mockConfig   = {
   socket_endpoint: mockEndpoint
 };
-jest.mock('../src/config', () => mockConfig);
+jest.mock('../../src/config', () => mockConfig);
 
 const socketConnection = {
   on: jest.fn()
@@ -24,20 +24,20 @@ const mockSocketObject = {
   startSocketConnection: jest.fn(() => socketConnection)
 };
 const socket           = jest.fn().mockImplementation(() => mockSocketObject);
-jest.mock('../src/socket/socket', () => {
+jest.mock('../../src/socket/socket', () => {
   return {Socket: socket};
 });
 
-import * as app from '../src/app';
+import * as socketHelper from '../../src/socket/socket_helper';
 
-describe('app', () => {
+describe('socket_helper', () => {
   describe('startSocketConnection', () => {
     beforeAll(() => {
       mockAuthorization.getTokens.mockResolvedValue({access_token: faker.random.number({min: 0, max: 1000})});
     });
 
     test('get access token for socket connection', async () => {
-      await app.startSocketConnection();
+      await socketHelper.startSocketConnection();
 
       expect(mockAuthorization.getTokens).toHaveBeenCalled();
     });
@@ -46,7 +46,7 @@ describe('app', () => {
       const accessToken = faker.random.uuid();
       mockAuthorization.getTokens.mockResolvedValueOnce({access_token: accessToken});
 
-      await app.startSocketConnection();
+      await socketHelper.startSocketConnection();
 
       expect(socket).toBeCalledWith(accessToken);
     });

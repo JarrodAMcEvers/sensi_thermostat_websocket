@@ -1,6 +1,6 @@
-import * as app from './app';
+import * as socketHelper from './socket/socket_helper';
 
-app.startSocketConnection()
+socketHelper.startSocketConnection()
   .catch(err => {
     console.error('could not setup socket connection', err);
     process.exit(1);
