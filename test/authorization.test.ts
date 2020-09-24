@@ -3,7 +3,7 @@ import * as nock from 'nock';
 
 const mockConfig = {
   token_endpoint: faker.internet.url(),
-  username: faker.internet.userName(),
+  email: faker.internet.userName(),
   password: faker.internet.password(),
   client_id: faker.random.uuid(),
   client_secret: faker.random.uuid()
@@ -29,7 +29,7 @@ describe('authorization', () => {
           grant_type: 'password',
           client_id: mockConfig.client_id,
           client_secret: mockConfig.client_secret,
-          username: mockConfig.username,
+          username: mockConfig.email,
           password: mockConfig.password
         })
         .reply(200, {access_token: accessToken, refresh_token: refreshToken});

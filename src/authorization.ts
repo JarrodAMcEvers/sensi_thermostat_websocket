@@ -13,7 +13,7 @@ export async function getTokens(): Promise<Tokens> {
         grant_type: 'password',
         client_id: config.client_id,
         client_secret: config.client_secret,
-        username: config.username,
+        username: config.email,
         password: config.password
       }
     }
