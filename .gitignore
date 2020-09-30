@@ -1,3 +1,5 @@
-node_modules
 .idea/
+.docker/
+
+node_modules
 coverage/

@@ -3,10 +3,6 @@
   "version": "0.0.1",
   "description": "",
   "author": "jarrodamcevers@gmail.com",
-  "scripts": {
-    "start": "./node_modules/ts-node/dist/bin.js src/index.ts",
-    "test": "./node_modules/jest/bin/jest.js"
-  },
   "dependencies": {
     "@types/node": "12.7.12",
     "request": "2.88.0",
