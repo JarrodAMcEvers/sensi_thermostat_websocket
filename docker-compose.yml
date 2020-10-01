@@ -1,5 +1,6 @@
 version: '3'
 
+# TODO: See if this can be updated to build the image if it does not exist when docker-compose up is ran
 services:
   app:
     image: sensi_websocket

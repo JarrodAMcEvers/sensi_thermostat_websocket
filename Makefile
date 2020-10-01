@@ -1,18 +1,23 @@
 #! /bin/bash
 
-.PHONY: test
-test:
-	./node_modules/jest/bin/jest.js
+.PHONY: build install run test use
 
+use:
+	nvm install
+install: use
+	npm install
 start:
 	./node_modules/ts-node/dist/bin.js src/index.ts
 
-docker-build:
+test:
+	./node_modules/jest/bin/jest.js
+
+build:
 	mkdir -p .docker
 	cp package.json .docker/
 	npm install --prefix .docker/ --only prod
 	docker build -t sensi_websocket ./
-docker-run:
+run:
 	docker run -d --name sensi_websocket sensi_websocket
 up:
 	docker-compose up -d
