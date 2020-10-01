@@ -14,6 +14,10 @@ docker-build:
 	docker build -t sensi_websocket ./
 docker-run:
 	docker run -d --name sensi_websocket sensi_websocket
+up:
+	docker-compose up -d
+down:
+	docker-compose down
 
 cleanup:
 	rm -rf .docker
