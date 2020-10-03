@@ -10,19 +10,22 @@ const mockConfig = {
 };
 jest.mock('../src/config', () => mockConfig);
 
-import * as authorization from '../src/authorization';
+import {Authorization} from '../src/authorization';
 
 describe('authorization', () => {
   jest.setTimeout(2000);
+  let authorization;
 
-  describe('getTokens', () => {
+  describe('login', () => {
     beforeEach(() => {
+      authorization = new Authorization();
       nock.cleanAll();
     });
 
     test('call endpoint and return token', async () => {
-      let accessToken  = faker.random.uuid();
-      let refreshToken = faker.random.uuid();
+      const accessToken  = faker.random.uuid();
+      const refreshToken = faker.random.uuid();
+      const response = {access_token: accessToken, refresh_token: refreshToken};
 
       let tokenMock = nock(mockConfig.token_endpoint)
         .post('/token', {
@@ -32,11 +35,14 @@ describe('authorization', () => {
           username: mockConfig.email,
           password: mockConfig.password
         })
-        .reply(200, {access_token: accessToken, refresh_token: refreshToken});
+        .reply(200, response);
 
-      const token = await authorization.getTokens();
+      const actual = await authorization.login();
 
-      expect(token).toEqual({access_token: accessToken, refresh_token: refreshToken});
+      expect(actual).toEqual(response);
+
+      expect(authorization.accessToken).toBe(accessToken)
+      expect(authorization.refreshToken).toBe(refreshToken)
       tokenMock.done();
     });
 
@@ -47,7 +53,7 @@ describe('authorization', () => {
         .reply(400, {error: error});
 
       try {
-        await authorization.getTokens();
+        await authorization.login();
         expect(true).toBeFalsy();
       } catch (err) {
         expect(err).toEqual({error: error});

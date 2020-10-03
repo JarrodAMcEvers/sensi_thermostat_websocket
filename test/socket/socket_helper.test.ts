@@ -6,10 +6,20 @@ const socketObject = {
 const mockSocket   = jest.fn(() => socketObject);
 jest.mock('socket.io-client', () => mockSocket);
 
-const mockAuthorization = {
-  getTokens: jest.fn()
-};
-jest.mock('../../src/authorization', () => mockAuthorization);
+const accessToken = faker.random.uuid();
+const mockAuthorizationObject = {
+  accessToken,
+  login: jest.fn()
+}
+const mockAuthorization = jest.fn().mockImplementation(() => {
+  return mockAuthorizationObject;
+})
+import {Authorization} from '../../src/authorization';
+jest.mock('../../src/authorization', () => {
+    return {
+      Authorization: mockAuthorization
+    }
+});
 
 const mockEndpoint = faker.internet.url();
 const mockConfig   = {
@@ -32,23 +42,10 @@ import * as socketHelper from '../../src/socket/socket_helper';
 
 describe('socket_helper', () => {
   describe('startSocketConnection', () => {
-    beforeAll(() => {
-      mockAuthorization.getTokens.mockResolvedValue({access_token: faker.random.number({min: 0, max: 1000})});
-    });
-
-    test('get access token for socket connection', async () => {
-      await socketHelper.startSocketConnection();
-
-      expect(mockAuthorization.getTokens).toHaveBeenCalled();
-    });
-
     test('properly creates socket connection', async () => {
-      const accessToken = faker.random.uuid();
-      mockAuthorization.getTokens.mockResolvedValueOnce({access_token: accessToken});
-
       await socketHelper.startSocketConnection();
 
-      expect(socket).toBeCalledWith(accessToken);
+      expect(socket).toBeCalledWith(mockAuthorizationObject);
     });
   });
 });

@@ -1,9 +1,9 @@
 import {Socket} from './socket';
-import {getTokens} from '../authorization';
+import {Authorization} from '../authorization';
 
 export async function startSocketConnection(): Promise<void> {
-  const accessToken      = (await getTokens()).access_token;
-  const socket           = new Socket(accessToken);
+  const authorization    = new Authorization();
+  const socket           = new Socket(authorization);
   socket.startSocketConnection();
 }
 

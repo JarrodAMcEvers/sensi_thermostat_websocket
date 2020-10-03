@@ -1,31 +1,33 @@
+import {Authorization} from '../authorization';
 import * as socketHelper from './socket_helper';
 import * as config from '../config';
 import * as socketIO from 'socket.io-client';
 
 export class Socket {
-  accessToken: string;
+  private authorization: Authorization;
   socketConnection: any;
 
-  constructor(accessToken) {
-    this.accessToken = accessToken;
+  constructor(authorization: Authorization) {
+    this.authorization = authorization;
     this.socketConnection = null;
   }
 
-  connectToSocket() {
+  async connectToSocket() {
     if (!this.socketConnection) {
+      await this.authorization.login();
       this.socketConnection = socketIO(
         config.socket_endpoint,
         {
           transports: ['websocket'],
           path: '/thermostat',
-          extraHeaders: { Authorization: `Bearer ${this.accessToken}` }
+          extraHeaders: { Authorization: `Bearer ${this.authorization.accessToken}` }
         }
       );
     }
   }
 
-  startSocketConnection() {
-    this.connectToSocket();
+  async startSocketConnection() {
+    await this.connectToSocket();
 
     this.socketConnection.on('connected', () => {
       console.log('connected');

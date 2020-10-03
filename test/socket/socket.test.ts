@@ -1,4 +1,20 @@
+import 'jest-extended';
 import * as faker from 'faker';
+
+const accessToken = faker.random.uuid();
+const mockAuthorizationObject = {
+  accessToken,
+  login: jest.fn().mockResolvedValue(null)
+}
+const mockAuthorization = jest.fn().mockImplementation(() => {
+  return mockAuthorizationObject;
+})
+import {Authorization} from '../../src/authorization';
+jest.mock('../../src/authorization', () => {
+    return {
+      Authorization: mockAuthorization
+    }
+});
 
 let mockEndpoint           = faker.internet.url();
 let mockConfig            = {
@@ -24,43 +40,51 @@ import {Socket} from '../../src/socket/socket';
 
 describe('socket', () => {
   jest.setTimeout(2000);
-  let accessToken;
+  let authorization;
 
   beforeEach(() => {
-    accessToken = faker.random.uuid();
+    authorization = new Authorization();
   });
 
-  test('return socket connection, if it exists', () => {
+  test('return socket connection, if it exists', async () => {
     let connection                = {
       on: jest.fn()
     };
-    let socketObject              = new Socket('token');
+    let socketObject              = new Socket(authorization);
     socketObject.socketConnection = connection;
 
-    const socketConnection = socketObject.startSocketConnection();
+    const socketConnection = await socketObject.startSocketConnection();
 
     expect(socketConnection).toEqual(connection);
     expect(mockSocket).not.toHaveBeenCalled();
   });
 
-  test('creates socket connection and returns it', () => {
-    let socketObject = new Socket(accessToken);
+  test('login', () => {
+    const socket = new Socket(authorization);
+    socket.startSocketConnection();
 
-    expect(socketObject.startSocketConnection()).toEqual(mockSocketObject);
+    expect(mockAuthorizationObject.login).toHaveBeenCalled();
+    expect(mockAuthorizationObject.login).toHaveBeenCalledBefore(mockSocket);
+  });
+
+  test('creates socket connection and returns it', async () => {
+    let socketObject = new Socket(authorization);
+
+    expect(await socketObject.startSocketConnection()).toEqual(mockSocketObject);
 
     let mockArgs: Array<2> = mockSocket.mock.calls[0];
     expect(mockArgs[0]).toBe(mockEndpoint);
     expect(mockArgs[1]).toEqual({
       transports: ['websocket'],
       path: '/thermostat',
-      extraHeaders: { Authorization: `Bearer ${accessToken}` }
+      extraHeaders: { Authorization: `Bearer ${authorization.accessToken}` }
     });
   });
 
   test('sets up connected, disconnect, and error handlers', async () => {
-    const socketObject = new Socket(accessToken);
+    const socketObject = new Socket(authorization);
 
-    const connection = socketObject.startSocketConnection();
+    const connection = await socketObject.startSocketConnection();
 
     expect(connection.on).toHaveBeenCalledWith('connected', expect.any(Function));
     expect(connection.on).toHaveBeenCalledWith('disconnect', socketHelper.disconnectHandler);
@@ -68,9 +92,9 @@ describe('socket', () => {
   });
 
   test('listens for state messages after connecting', async () => {
-    const socketObject = new Socket(accessToken);
+    const socketObject = new Socket(authorization);
 
-    const connection = socketObject.startSocketConnection();
+    const connection = await socketObject.startSocketConnection();
     const handler = connection.on.mock.calls.find(x => x[0] === 'connected')[1];
     await handler();
 
