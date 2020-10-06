@@ -4,7 +4,9 @@ import * as faker from 'faker';
 const accessToken = faker.random.uuid();
 const mockAuthorizationObject = {
   accessToken,
-  login: jest.fn().mockResolvedValue(null)
+  login: jest.fn().mockResolvedValue(null),
+  refreshAccessToken: jest.fn().mockResolvedValue(null),
+  isRefreshTokenAvailable: jest.fn()
 }
 const mockAuthorization = jest.fn().mockImplementation(() => {
   return mockAuthorizationObject;
@@ -31,7 +33,6 @@ jest.mock('socket.io-client', () => mockSocket);
 const socketHelper = {
   connectHandler: jest.fn(),
   disconnectHandler: jest.fn(),
-  errorHandler: jest.fn(),
   stateHandler: jest.fn()
 };
 jest.mock('../../src/socket/socket_helper', () => socketHelper);
@@ -40,6 +41,7 @@ import {Socket} from '../../src/socket/socket';
 
 describe('socket', () => {
   jest.setTimeout(2000);
+  console.error = jest.fn()
   let authorization;
 
   beforeEach(() => {
@@ -60,11 +62,23 @@ describe('socket', () => {
   });
 
   test('login', () => {
+    mockAuthorizationObject.isRefreshTokenAvailable.mockReturnValue(false);
     const socket = new Socket(authorization);
     socket.startSocketConnection();
 
     expect(mockAuthorizationObject.login).toHaveBeenCalled();
+    expect(mockAuthorizationObject.refreshAccessToken).not.toHaveBeenCalled();
     expect(mockAuthorizationObject.login).toHaveBeenCalledBefore(mockSocket);
+  });
+
+  test('get new access token if a refresh token is available', () => {
+    mockAuthorizationObject.isRefreshTokenAvailable.mockReturnValue(true);
+    const socket = new Socket(authorization);
+    socket.startSocketConnection();
+
+    expect(mockAuthorizationObject.refreshAccessToken).toHaveBeenCalled();
+    expect(mockAuthorizationObject.login).not.toHaveBeenCalled();
+    expect(mockAuthorizationObject.refreshAccessToken).toHaveBeenCalledBefore(mockSocket);
   });
 
   test('creates socket connection and returns it', async () => {
@@ -88,7 +102,7 @@ describe('socket', () => {
 
     expect(connection.on).toHaveBeenCalledWith('connected', expect.any(Function));
     expect(connection.on).toHaveBeenCalledWith('disconnect', socketHelper.disconnectHandler);
-    expect(connection.on).toHaveBeenCalledWith('error', socketHelper.errorHandler);
+    expect(connection.on).toHaveBeenCalledWith('error', expect.any(Function));
   });
 
   test('listens for state messages after connecting', async () => {
@@ -99,5 +113,27 @@ describe('socket', () => {
     await handler();
 
     expect(connection.on).toHaveBeenCalledWith('state', socketHelper.stateHandler);
+  });
+
+  test('reestablish socket connection if jwt expired error comes through', async () => {
+    const socketObject = new Socket(authorization);
+    const error = JSON.stringify({
+      message: 'jwt expired',
+      code: 'invalid_token',
+      type: 'UnauthorizedError'
+    });
+
+    const connection = await socketObject.startSocketConnection();
+    const handler = connection.on.mock.calls.find(x => x[0] === 'error')[1];
+    mockSocket.mockReset();
+    await handler(error);
+
+    let mockArgs: Array<2> = mockSocket.mock.calls[0];
+    expect(mockArgs[0]).toBe(mockEndpoint);
+    expect(mockArgs[1]).toEqual({
+      transports: ['websocket'],
+      path: '/thermostat',
+      extraHeaders: { Authorization: `Bearer ${authorization.accessToken}` }
+    });
   });
 });

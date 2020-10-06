@@ -14,7 +14,12 @@ export class Socket {
 
   async connectToSocket() {
     if (!this.socketConnection) {
-      await this.authorization.login();
+      if (!this.authorization.isRefreshTokenAvailable()) {
+        await this.authorization.login();
+      } else {
+        await this.authorization.refreshAccessToken();
+      }
+
       this.socketConnection = socketIO(
         config.socket_endpoint,
         {
@@ -34,7 +39,18 @@ export class Socket {
       this.socketConnection.on('state', socketHelper.stateHandler);
     });
     this.socketConnection.on('disconnect', socketHelper.disconnectHandler);
-    this.socketConnection.on('error', socketHelper.errorHandler);
+    this.socketConnection.on('error', async error => {
+      console.error('socket error', error);
+      try {
+        const body = JSON.parse(error);
+        if (body.message.indexOf('jwt expired') >= 0) {
+          this.socketConnection = null;
+          await this.startSocketConnection();
+        }
+      } catch(e) {
+        console.error('caught exception, ignoring', e);
+      }
+    });
 
     return this.socketConnection;
   }
