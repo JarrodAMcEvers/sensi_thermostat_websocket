@@ -9,7 +9,7 @@ export class Authorization {
   public accessToken: string = null;
   private refreshToken: string = null;
 
-  public async login(): Promise<SensiOAuthResponse> {
+  public async login(): Promise<void> {
     const response = await post(
       `${config.token_endpoint}/token`,
       {
@@ -28,11 +28,8 @@ export class Authorization {
       return Promise.reject(body);
     }
 
-    // Potentially refactor this side-effect
     this.accessToken = body.access_token;
     this.refreshToken = body.refresh_token;
-
-    return body;
   }
 
   public async refreshAccessToken(): Promise<void> {

@@ -37,9 +37,7 @@ describe('authorization', () => {
         })
         .reply(200, response);
 
-      const actual = await authorization.login();
-
-      expect(actual).toEqual(response);
+      await authorization.login();
 
       expect(authorization.accessToken).toBe(accessToken)
       expect(authorization.refreshToken).toBe(refreshToken)
