@@ -27,7 +27,7 @@ jest.mock('../../src/config', () => mockConfig);
 const mockSocketObject = {
   on: jest.fn()
 };
-const mockSocket = jest.fn(() => mockSocketObject);
+let mockSocket = jest.fn(() => mockSocketObject);
 jest.mock('socket.io-client', () => mockSocket);
 
 const socketHelper = {
@@ -41,7 +41,7 @@ import {Socket} from '../../src/socket/socket';
 
 describe('socket', () => {
   jest.setTimeout(2000);
-  console.error = jest.fn()
+  console.error = jest.fn();
   let authorization;
 
   beforeEach(() => {
@@ -95,12 +95,12 @@ describe('socket', () => {
     });
   });
 
-  test('sets up connected, disconnect, and error handlers', async () => {
+  test('sets up connect, disconnect, and error handlers', async () => {
     const socketObject = new Socket(authorization);
 
     const connection = await socketObject.startSocketConnection();
 
-    expect(connection.on).toHaveBeenCalledWith('connected', expect.any(Function));
+    expect(connection.on).toHaveBeenCalledWith('connect', expect.any(Function));
     expect(connection.on).toHaveBeenCalledWith('disconnect', socketHelper.disconnectHandler);
     expect(connection.on).toHaveBeenCalledWith('error', expect.any(Function));
   });
@@ -109,7 +109,7 @@ describe('socket', () => {
     const socketObject = new Socket(authorization);
 
     const connection = await socketObject.startSocketConnection();
-    const handler = connection.on.mock.calls.find(x => x[0] === 'connected')[1];
+    const handler = connection.on.mock.calls.find(x => x[0] === 'connect')[1];
     await handler();
 
     expect(connection.on).toHaveBeenCalledWith('state', socketHelper.stateHandler);
@@ -117,15 +117,15 @@ describe('socket', () => {
 
   test('reestablish socket connection if jwt expired error comes through', async () => {
     const socketObject = new Socket(authorization);
-    const error = JSON.stringify({
+    const error = {
       message: 'jwt expired',
       code: 'invalid_token',
       type: 'UnauthorizedError'
-    });
+    };
 
     const connection = await socketObject.startSocketConnection();
     const handler = connection.on.mock.calls.find(x => x[0] === 'error')[1];
-    mockSocket.mockReset();
+    mockSocket.mockClear();
     await handler(error);
 
     let mockArgs: Array<2> = mockSocket.mock.calls[0];

@@ -34,21 +34,23 @@ export class Socket {
   async startSocketConnection() {
     await this.connectToSocket();
 
-    this.socketConnection.on('connected', () => {
+    this.socketConnection.on('connect', () => {
       console.log('connected');
+      /*
+        Even if the access token is expired (it's valid for four hours),
+        you will still get updates from the server about your thermostats.
+        If you try to emit an event (get_weather, etc.), you will get rejected
+        for having an expired token.
+      */
       this.socketConnection.on('state', socketHelper.stateHandler);
     });
     this.socketConnection.on('disconnect', socketHelper.disconnectHandler);
     this.socketConnection.on('error', async error => {
       console.error('socket error', error);
-      try {
-        const body = JSON.parse(error);
-        if (body.message.indexOf('jwt expired') >= 0) {
-          this.socketConnection = null;
-          await this.startSocketConnection();
-        }
-      } catch(e) {
-        console.error('caught exception, ignoring', e);
+      if (error.message.indexOf('jwt expired') >= 0) {
+        console.log('access token is expired, reauthorizing')
+        this.socketConnection = null;
+        await this.startSocketConnection();
       }
     });
 
