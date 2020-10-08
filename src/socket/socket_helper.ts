@@ -8,6 +8,9 @@ export async function startSocketConnection(): Promise<void> {
 }
 
 export function stateHandler(data: any): void {
+  const datetime = new Date().toLocaleString().replace(',', '');
+
+  console.log('received data at', datetime);
   console.log(JSON.stringify(data));
 }
 
