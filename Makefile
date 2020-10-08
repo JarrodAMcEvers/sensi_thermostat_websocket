@@ -13,6 +13,7 @@ test:
 	./node_modules/jest/bin/jest.js
 
 build:
+	rm -rf .docker
 	mkdir -p .docker
 	cp package.json .docker/
 	npm install --prefix .docker/ --only prod
