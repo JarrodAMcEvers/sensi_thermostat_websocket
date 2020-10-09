@@ -25,6 +25,7 @@ let mockConfig            = {
 jest.mock('../../src/config', () => mockConfig);
 
 const mockSocketObject = {
+  connected: false,
   on: jest.fn()
 };
 let mockSocket = jest.fn(() => mockSocketObject);
@@ -48,20 +49,21 @@ describe('socket', () => {
     authorization = new Authorization();
   });
 
-  test('return socket connection, if it exists', async () => {
-    let connection                = {
+  test('return socket connection if the socket is connected', async () => {
+    const connection                = {
+      connected: true,
       on: jest.fn()
     };
-    let socketObject              = new Socket(authorization);
+    const socketObject              = new Socket(authorization);
     socketObject.socketConnection = connection;
 
     const socketConnection = await socketObject.startSocketConnection();
 
-    expect(socketConnection).toEqual(connection);
+    expect(socketConnection).toBe(connection);
     expect(mockSocket).not.toHaveBeenCalled();
   });
 
-  test('login', () => {
+  test('login if refresh token is not available', () => {
     mockAuthorizationObject.isRefreshTokenAvailable.mockReturnValue(false);
     const socket = new Socket(authorization);
     socket.startSocketConnection();

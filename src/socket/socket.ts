@@ -5,30 +5,31 @@ import * as socketIO from 'socket.io-client';
 
 export class Socket {
   private authorization: Authorization;
-  socketConnection: any;
+  socketConnection: any = null;
 
   constructor(authorization: Authorization) {
     this.authorization = authorization;
-    this.socketConnection = null;
   }
 
   async connectToSocket() {
-    if (!this.socketConnection) {
-      if (!this.authorization.isRefreshTokenAvailable()) {
-        await this.authorization.login();
-      } else {
-        await this.authorization.refreshAccessToken();
-      }
-
-      this.socketConnection = socketIO(
-        config.socket_endpoint,
-        {
-          transports: ['websocket'],
-          path: '/thermostat',
-          extraHeaders: { Authorization: `Bearer ${this.authorization.accessToken}` }
-        }
-      );
+    if (this.socketConnection && this.socketConnection.connected === true) {
+      return;
     }
+
+    if (this.authorization.isRefreshTokenAvailable()) {
+      await this.authorization.refreshAccessToken();
+    } else {
+      await this.authorization.login();
+    }
+
+    this.socketConnection = socketIO(
+      config.socket_endpoint,
+      {
+        transports: ['websocket'],
+        path: '/thermostat',
+        extraHeaders: { Authorization: `Bearer ${this.authorization.accessToken}` }
+      }
+    );
   }
 
   async startSocketConnection() {
