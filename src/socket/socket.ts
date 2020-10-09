@@ -48,9 +48,9 @@ export class Socket {
     this.socketConnection.on('disconnect', socketHelper.disconnectHandler);
     this.socketConnection.on('error', async error => {
       console.error('socket error', error);
-      if (error.message.indexOf('jwt expired') >= 0) {
+      if (error.message && error.message.indexOf('jwt expired') >= 0) {
         console.log('access token is expired, reauthorizing')
-        this.socketConnection = null;
+        this.socketConnection.close();
         await this.startSocketConnection();
       }
     });

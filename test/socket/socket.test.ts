@@ -26,6 +26,7 @@ jest.mock('../../src/config', () => mockConfig);
 
 const mockSocketObject = {
   connected: false,
+  close: jest.fn(),
   on: jest.fn()
 };
 let mockSocket = jest.fn(() => mockSocketObject);
@@ -128,9 +129,11 @@ describe('socket', () => {
     const connection = await socketObject.startSocketConnection();
     const handler = connection.on.mock.calls.find(x => x[0] === 'error')[1];
     mockSocket.mockClear();
+    mockSocketObject.close.mockClear();
     await handler(error);
 
     let mockArgs: Array<2> = mockSocket.mock.calls[0];
+    expect(mockSocketObject.close).toHaveBeenCalledBefore(mockSocket);
     expect(mockArgs[0]).toBe(mockEndpoint);
     expect(mockArgs[1]).toEqual({
       transports: ['websocket'],
