@@ -1,5 +1,14 @@
 import {Socket} from './socket';
 import {Authorization} from '../authorization';
+import { SocketState } from '../types';
+
+export class SocketHelper {
+  private state: SocketState;
+
+  public setState(state: SocketState) {
+    this.state = state;
+  }
+}
 
 export async function startSocketConnection(): Promise<void> {
   const authorization    = new Authorization();
