@@ -1,5 +1,3 @@
-import {Socket} from './socket';
-import {Authorization} from '../authorization';
 import { SocketState } from '../types';
 
 export class SocketHelper {
@@ -8,12 +6,6 @@ export class SocketHelper {
   public setState(state: SocketState) {
     this.state = state;
   }
-}
-
-export async function startSocketConnection(): Promise<void> {
-  const authorization    = new Authorization();
-  const socket           = new Socket(authorization);
-  socket.startSocketConnection();
 }
 
 export function stateHandler(data: any): void {
