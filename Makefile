@@ -1,6 +1,6 @@
 #! /bin/bash
 
-.PHONY: build install run test use
+.PHONY: build install run repl test use
 
 use:
 	nvm install
@@ -28,3 +28,5 @@ down:
 cleanup:
 	rm -rf .docker
 
+repl:
+	./node_modules/ts-node/dist/bin.js
