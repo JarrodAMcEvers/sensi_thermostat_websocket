@@ -1,27 +1,32 @@
 # Sensi Thermostat Websocket
 
+## Command line tools needed
+1. npm
+1. nvm
+1. docker
+1. docker-compose
 
 ## Quick Start
-To start getting thermostat data from your Sensi thermostat(s), first, install the dependecies. After that is done, just run `make start`. You will need to pass in your Sensi account email address and password as a command line argument to `make start`.
-Refer to the [Clients](#Clients) table for valid Client ID and secret combinations.
-
 ```
-make install
+make install # or nvm use && npm install
 CLIENT_ID=client_id CLIENT_SECRET=client_secret EMAIL=email PASSWORD=password make start
 ```
 
+You will need to pass in your Sensi account email address and password as a command line argument to `make start`.
+You will also need a Client ID and secret for the OAuth process. Please refer to the [Clients](#Clients) table for valid Client ID and secret combinations.
+
 ## The Docker Way
-If you want to run it in a docker container, run `make up`.
-Before running make up, you will need a `env` file in the root directory of this project to pass in ENV variables.
-The file will need to look like this:
+If you want to run it in a docker container, run `make up`. This requires that you have a file named `env` in the root directory of this project. This allows you to pass in your config to the container.
+The file should look like this:
 ```
 CLIENT_ID=client
 CLIENT_SECRET=secret
 EMAIL=e@mail.com
-PASSWORD=your_secret_password
+PASSWORD=your_sensi_password
 ```
 
 ### [Clients](#Clients)
 | Client ID | Client Secret  |
 |---|---|
 | android  | XBF?Z9U6;x3bUwe^FugbL=4ksvGjLnCQ |
+| ios | <TBD> |
