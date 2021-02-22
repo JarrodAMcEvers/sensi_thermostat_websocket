@@ -2,9 +2,16 @@ import { SocketState } from '../types';
 
 export class SocketHelper {
   private state: SocketState;
+  get socketState() {
+    return this.state;
+  }
 
-  public setState(state: SocketState) {
-    this.state = state;
+  stateHandler(data: any): void {
+    this.state = <SocketState>data;
+    const datetime = new Date().toLocaleString().replace(',', '');
+
+  console.log('received data at', datetime);
+  console.log(JSON.stringify(data));
   }
 }
 
