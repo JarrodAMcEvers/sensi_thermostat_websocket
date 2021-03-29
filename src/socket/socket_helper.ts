@@ -1,4 +1,4 @@
-import { SocketState } from '../types';
+import { SocketState } from '../types/types';
 
 export class SocketHelper {
   private state: SocketState;

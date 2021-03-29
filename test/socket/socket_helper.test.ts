@@ -1,6 +1,4 @@
-import { Socket } from 'dgram';
 import * as faker from 'faker';
-import { isExportDeclaration } from 'typescript';
 
 const socketObject = {
   on: jest.fn()

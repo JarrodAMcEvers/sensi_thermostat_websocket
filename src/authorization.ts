@@ -1,4 +1,4 @@
-import {SensiOAuthResponse} from './types';
+import {SensiOAuthResponse} from './types/types';
 import * as config from './config';
 import * as request from 'request';
 import * as util from 'util';
