@@ -27,6 +27,8 @@
     ],
     "coverageDirectory": "./coverage/",
     "preset": "ts-jest",
-    "setupFilesAfterEnv": ["jest-extended"]
+    "setupFilesAfterEnv": [
+      "jest-extended"
+    ]
   }
 }
