@@ -16,7 +16,7 @@ You will need to pass in your Sensi account email address and password as a comm
 You will also need a Client ID and secret for the OAuth process. Please refer to the [Clients](#Clients) table for valid Client ID and secret combinations.
 
 ## The Docker Way
-If you want to run it in a docker container, run `make up`. This requires that you have a file named `env` in the root directory of this project. This allows you to pass in your config to the container.
+If you want to run it in a docker container, run `make up` or `make run`. This requires that you have a file named `env` in the root directory of this project. This allows you to pass in your config to the container.
 The file should look like this:
 ```
 CLIENT_ID=client

@@ -1,6 +1,6 @@
 #! /bin/bash
 
-.PHONY: build install run repl test use
+.PHONY: build cleanup install run repl test use
 
 use:
 	nvm install
@@ -18,15 +18,15 @@ build:
 	cp package.json .docker/
 	npm install --prefix .docker/ --only prod
 	docker build -t sensi_websocket ./
-run:
-	docker run -d --name sensi_websocket sensi_websocket
+run: cleanup build
+	docker run --env-file ./env -d --name sensi_websocket sensi_websocket
 up:
 	docker-compose up -d
 down:
 	docker-compose down
 
 cleanup:
-	rm -rf .docker
+	docker rm -f sensi_websocket
 
 repl:
 	./node_modules/ts-node/dist/bin.js
