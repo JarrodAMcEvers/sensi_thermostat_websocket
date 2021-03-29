@@ -114,8 +114,10 @@ describe('socket', () => {
     const connection = await socketObject.startSocketConnection();
     const handler = connection.on.mock.calls.find(x => x[0] === 'connect')[1];
     await handler();
+    const stateHandler = connection.on.mock.calls.find(x => x[0] === 'state')[1];
+    await stateHandler('data')
 
-    expect(connection.on).toHaveBeenCalledWith('state', socketHelper.stateHandler);
+    expect(socketHelper.stateHandler).toHaveBeenCalledWith('data');
   });
 
   test('reestablish socket connection if jwt expired error comes through', async () => {

@@ -32,14 +32,16 @@ describe('socket_helper', () => {
   });
 
   describe('stateHandler', () => {
-    test('sets data on message', () => {
+    // placeholder test for now. this should be replaced with someone better besides testing the getter and setter.
+    // jest complains if a describe block does not have at least one test.
+    test('sets data on message', async () => {
       const data = {
         data: 'one',
         other: 'two'
       };
-      testSocketHelper.stateHandler(data);
+      await testSocketHelper.stateHandler(data);
 
-      expect(testSocketHelper.socketState).toEqual(data);
+      expect(testSocketHelper.state).toEqual(data);
     });
   });
 });

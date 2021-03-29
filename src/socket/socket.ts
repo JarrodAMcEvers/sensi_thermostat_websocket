@@ -43,7 +43,9 @@ export class Socket {
         If you try to emit an event (get_weather, etc.), you will get rejected
         for having an expired token.
       */
-      this.socketConnection.on('state', socketHelper.stateHandler);
+      this.socketConnection.on('state', (data: any) => {
+        return socketHelper.stateHandler(data);
+      });
     });
     this.socketConnection.on('disconnect', socketHelper.disconnectHandler);
     this.socketConnection.on('error', async (error: Error) => {
