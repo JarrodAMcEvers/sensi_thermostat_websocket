@@ -1,7 +1,8 @@
 import {Authorization} from '../authorization';
-import * as socketHelper from './socket_helper';
+import { SocketHelper } from './socket_helper';
 import * as config from '../config';
 import * as socketIO from 'socket.io-client';
+import { SocketState } from '../types/types';
 
 export class Socket {
   private authorization: Authorization;
@@ -34,6 +35,7 @@ export class Socket {
 
   async startSocketConnection() {
     await this.connectToSocket();
+    const socketHelper = new SocketHelper();
 
     this.socketConnection.on('connect', () => {
       console.log('connected');
@@ -44,6 +46,7 @@ export class Socket {
         for having an expired token.
       */
       this.socketConnection.on('state', (data: any) => {
+        socketHelper.state = <SocketState>data;
         return socketHelper.stateHandler(data);
       });
     });

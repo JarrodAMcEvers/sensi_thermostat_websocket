@@ -1,6 +1,7 @@
 import 'jest-extended';
 import * as faker from 'faker';
 
+// authorization mock
 const accessToken = faker.random.uuid();
 const mockAuthorizationObject = {
   accessToken,
@@ -18,12 +19,16 @@ jest.mock('../../src/authorization', () => {
     }
 });
 
+
+// config mock
 let mockEndpoint           = faker.internet.url();
 let mockConfig            = {
   socket_endpoint: mockEndpoint
 };
 jest.mock('../../src/config', () => mockConfig);
 
+
+// socket-io client mock
 const mockSocketObject = {
   connected: false,
   close: jest.fn(),
@@ -32,14 +37,20 @@ const mockSocketObject = {
 let mockSocket = jest.fn(() => mockSocketObject);
 jest.mock('socket.io-client', () => mockSocket);
 
-const socketHelper = {
-  connectHandler: jest.fn(),
-  disconnectHandler: jest.fn(),
-  stateHandler: jest.fn()
-};
-jest.mock('../../src/socket/socket_helper', () => socketHelper);
 
-import {Socket} from '../../src/socket/socket';
+// socket helper mock
+const mockSocketHelperObject = {
+  state: '',
+  stateHandler: jest.fn(),
+  disconnectHandler: jest.fn()
+};
+const socketHelper = jest.fn().mockImplementation(() => mockSocketHelperObject);
+jest.mock('../../src/socket/socket_helper', () => {
+  return { SocketHelper: socketHelper };
+});
+
+
+import { Socket } from '../../src/socket/socket';
 
 describe('socket', () => {
   jest.setTimeout(2000);
@@ -48,6 +59,7 @@ describe('socket', () => {
 
   beforeEach(() => {
     authorization = new Authorization();
+    mockSocketHelperObject.stateHandler.mockImplementation(() => true);
   });
 
   test('return socket connection if the socket is connected', async () => {
@@ -98,26 +110,41 @@ describe('socket', () => {
     });
   });
 
-  test('sets up connect, disconnect, and error handlers', async () => {
+  test('sets up socket helper and connect, disconnect, and error handlers', async () => {
     const socketObject = new Socket(authorization);
 
     const connection = await socketObject.startSocketConnection();
 
+    expect(socketHelper).toHaveBeenCalled();
     expect(connection.on).toHaveBeenCalledWith('connect', expect.any(Function));
-    expect(connection.on).toHaveBeenCalledWith('disconnect', socketHelper.disconnectHandler);
+    expect(connection.on).toHaveBeenCalledWith('disconnect', mockSocketHelperObject.disconnectHandler);
     expect(connection.on).toHaveBeenCalledWith('error', expect.any(Function));
   });
 
-  test('listens for state messages after connecting', async () => {
-    const socketObject = new Socket(authorization);
+  describe('state event handler', () => {
+    test('listens for state messages after connecting', async () => {
+      const socketObject = new Socket(authorization);
 
-    const connection = await socketObject.startSocketConnection();
-    const handler = connection.on.mock.calls.find(x => x[0] === 'connect')[1];
-    await handler();
-    const stateHandler = connection.on.mock.calls.find(x => x[0] === 'state')[1];
-    await stateHandler('data')
+      const connection = await socketObject.startSocketConnection();
+      const handler = connection.on.mock.calls.find(x => x[0] === 'connect')[1];
+      await handler();
+      const stateHandler = connection.on.mock.calls.find(x => x[0] === 'state')[1];
+      await stateHandler('data')
 
-    expect(socketHelper.stateHandler).toHaveBeenCalledWith('data');
+      expect(mockSocketHelperObject.stateHandler).toHaveBeenCalledWith('data');
+    });
+
+    test('updates socket helper state on state message', async () => {
+      const socketObject = new Socket(authorization);
+
+      const connection = await socketObject.startSocketConnection();
+      const handler = connection.on.mock.calls.find(x => x[0] === 'connect')[1];
+      await handler();
+      const stateHandler = connection.on.mock.calls.find(x => x[0] === 'state')[1];
+      await stateHandler('data')
+
+      expect(mockSocketHelperObject.state).toEqual('data');
+    });
   });
 
   test('reestablish socket connection if jwt expired error comes through', async () => {

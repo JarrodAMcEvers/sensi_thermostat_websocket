@@ -5,6 +5,9 @@ export class SocketHelper {
   public get state() {
     return this._state;
   }
+  public set state(data: SocketState) {
+    this._state = data;
+  }
 
   stateHandler(data: any): void {
     this._state = <SocketState>data;
@@ -13,15 +16,8 @@ export class SocketHelper {
     console.log('received data at', datetime);
     console.log(JSON.stringify(data));
   }
-}
 
-export function stateHandler(data: any): void {
-  const datetime = new Date().toLocaleString().replace(',', '');
-
-  console.log('received data at', datetime);
-  console.log(JSON.stringify(data));
-}
-
-export function disconnectHandler(err): void {
-  console.error('disconnected', err);
+  disconnectHandler(err): void {
+    console.error('disconnected', err);
+  }
 }
