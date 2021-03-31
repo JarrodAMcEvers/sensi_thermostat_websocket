@@ -42,11 +42,10 @@ export class Socket {
       /*
         Even if the access token is expired (it's valid for four hours),
         you will still get updates from the server about your thermostats.
-        If you try to emit an event (get_weather, etc.), you will get rejected
-        for having an expired token.
+        If you try to emit an event (get_weather, etc.), it will get rejected
+        with an unauthorized error.
       */
       this.socketConnection.on('state', (data: any) => {
-        socketHelper.state = <SocketState>data;
         return socketHelper.stateHandler(data);
       });
     });
