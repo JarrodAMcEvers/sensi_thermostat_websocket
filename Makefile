@@ -15,8 +15,8 @@ test:
 build:
 	rm -rf .docker
 	mkdir -p .docker
-	cp package.json .docker/
-	npm install --prefix .docker/ --only prod
+	cp {package.json,package-lock.json} .docker/
+	npm ci --only production --prefix .docker/
 	docker build -t sensi_websocket ./
 run: cleanup build
 	docker run --env-file ./env -d --name sensi_websocket sensi_websocket
