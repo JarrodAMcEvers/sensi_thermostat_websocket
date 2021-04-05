@@ -1,10 +1,11 @@
 FROM node:12
 
-RUN mkdir -p /usr/src/
 WORKDIR /usr/src/
-COPY src /usr/src/
-COPY package.json /usr/src/
-COPY tsconfig.json /usr/src/
-COPY .docker/node_modules/ /usr/src/node_modules/
+USER node
+
+COPY --chown=node:node src /usr/src/
+COPY --chown=node:node package.json /usr/src/
+COPY --chown=node:node tsconfig.json /usr/src/
+COPY --chown=node:node .docker/node_modules/ /usr/src/node_modules/
 
 CMD node_modules/ts-node/dist/bin.js index.ts
