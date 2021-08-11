@@ -46,10 +46,13 @@ export class Socket {
         with an unauthorized error.
       */
       this.socketConnection.on('state', (data: any) => {
-        return socketHelper.stateHandler(data);
+        socketHelper.stateHandler(data);
       });
     });
+
+    // TODO: add reconnect logic
     this.socketConnection.on('disconnect', socketHelper.disconnectHandler);
+
     this.socketConnection.on('error', async (error: Error) => {
       console.error('socket error', error);
       if (error.message && error.message.indexOf('jwt expired') >= 0) {
