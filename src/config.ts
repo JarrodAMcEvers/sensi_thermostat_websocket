@@ -1,5 +1,6 @@
 export const socket_endpoint = 'https://rt.sensiapi.io';
 export const token_endpoint  = 'https://oauth.sensiapi.io';
+export const consul_endpoint = process.env.CONSUL_ENDPOINT;
 export const client_id       = process.env.CLIENT_ID;
 export const client_secret   = process.env.CLIENT_SECRET;
 export const email           = process.env.EMAIL;

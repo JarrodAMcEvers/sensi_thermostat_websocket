@@ -4,6 +4,7 @@
   "description": "",
   "author": "jarrodamcevers@gmail.com",
   "dependencies": {
+    "@types/consul": "^0.23.35",
     "@types/node": "12.7.12",
     "request": "2.88.0",
     "socket.io-client": "^2.4.0",
