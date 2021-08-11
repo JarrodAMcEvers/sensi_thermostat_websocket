@@ -5,9 +5,6 @@ export class SocketHelper {
   public get state() {
     return this._state;
   }
-  public set state(data: SocketState) {
-    this._state = data;
-  }
 
   stateHandler(data: any): void {
     this._state = <SocketState>data;
