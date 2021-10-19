@@ -12,17 +12,17 @@ const mockAuthorizationObject = {
 const mockAuthorization = jest.fn().mockImplementation(() => {
   return mockAuthorizationObject;
 })
-import {Authorization} from '../../src/authorization';
+import { Authorization } from '../../src/authorization';
 jest.mock('../../src/authorization', () => {
-    return {
-      Authorization: mockAuthorization
-    }
+  return {
+    Authorization: mockAuthorization
+  }
 });
 
 
 // config mock
-let mockEndpoint           = faker.internet.url();
-let mockConfig            = {
+let mockEndpoint = faker.internet.url();
+let mockConfig = {
   socket_endpoint: mockEndpoint
 };
 jest.mock('../../src/config', () => mockConfig);
@@ -63,11 +63,11 @@ describe('socket', () => {
   });
 
   test('return socket connection if the socket is connected', async () => {
-    const connection                = {
+    const connection = {
       connected: true,
       on: jest.fn()
     };
-    const socketObject              = new Socket(authorization);
+    const socketObject = new Socket(authorization);
     socketObject.socketConnection = connection;
 
     const socketConnection = await socketObject.startSocketConnection();
