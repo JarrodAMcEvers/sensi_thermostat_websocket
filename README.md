@@ -29,8 +29,10 @@ EMAIL=e@mail.com
 PASSWORD=your_sensi_password
 ```
 
+
+
 ### [Clients](#Clients)
 | Client ID | Client Secret  |
 |---|---|
 | android  | XBF?Z9U6;x3bUwe^FugbL=4ksvGjLnCQ |
-| ios | <TBD> |
+| ios | 8m7YoDninTVasvZ42;^nwrA}%FPWuVjH |
