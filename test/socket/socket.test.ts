@@ -21,9 +21,9 @@ jest.mock('../../src/authorization', () => {
 
 
 // config mock
-let mockEndpoint = faker.internet.url();
+// let mockEndpoint = faker.internet.url();
 let mockConfig = {
-  socket_endpoint: mockEndpoint
+  socket_endpoint: faker.internet.url()
 };
 jest.mock('../../src/config', () => mockConfig);
 
@@ -102,7 +102,7 @@ describe('socket', () => {
     expect(await socketObject.startSocketConnection()).toEqual(mockSocketObject);
 
     let mockArgs: Array<2> = mockSocket.mock.calls[0];
-    expect(mockArgs[0]).toBe(mockEndpoint);
+    expect(mockArgs[0]).toBe(mockConfig.socket_endpoint);
     expect(mockArgs[1]).toEqual({
       transports: ['websocket'],
       path: '/thermostat',
@@ -151,7 +151,7 @@ describe('socket', () => {
 
     let mockArgs: Array<2> = mockSocket.mock.calls[0];
     expect(mockSocketObject.close).toHaveBeenCalledBefore(mockSocket);
-    expect(mockArgs[0]).toBe(mockEndpoint);
+    expect(mockArgs[0]).toBe(mockConfig.socket_endpoint);
     expect(mockArgs[1]).toEqual({
       transports: ['websocket'],
       path: '/thermostat',
