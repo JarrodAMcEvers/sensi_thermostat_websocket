@@ -1,55 +1,54 @@
-import {SensiOAuthResponse} from './types/types';
+import { SensiOAuthResponse } from './types/types';
 import * as config from './config';
-import * as request from 'request';
-import * as util from 'util';
-
-const post = util.promisify(request.post);
+// needed because of CommonJS module
+const axios = require('axios').default;
 
 export class Authorization {
   public accessToken: string = null;
   private refreshToken: string = null;
 
   public async login(): Promise<void> {
-    const response = await post(
-      `${config.token_endpoint}/token`,
-      {
-        form: {
+    try {
+      const response = await axios({
+        url: `${config.token_endpoint}/token`,
+        method: 'POST',
+        data: {
           grant_type: 'password',
           client_id: config.client_id,
           client_secret: config.client_secret,
           username: config.email,
           password: config.password
         }
-      }
-    );
+      });
 
-    const body: SensiOAuthResponse = JSON.parse(response.body);
-    if (response.statusCode === 400) {
-      return Promise.reject(body);
+      const body: SensiOAuthResponse = response.data;
+
+      this.accessToken = body.access_token;
+      this.refreshToken = body.refresh_token;
+    } catch (err) {
+      return Promise.reject(err.response.data);
     }
-
-    this.accessToken = body.access_token;
-    this.refreshToken = body.refresh_token;
   }
 
   public async refreshAccessToken(): Promise<void> {
-    const response = await post(
-      `${config.token_endpoint}/token`,
-      {
-        form: {
+    try {
+      const response = await axios({
+        url: `${config.token_endpoint}/token`,
+        method: 'POST',
+        data: {
           grant_type: 'refresh_token',
           client_id: config.client_id,
           client_secret: config.client_secret,
           refresh_token: this.refreshToken
         }
-      }
-    );
+      });
 
-    const body: SensiOAuthResponse = JSON.parse(response.body);
-    if (response.statusCode === 400) {
-      return Promise.reject(body);
+      const body: SensiOAuthResponse = response.data;
+
+      this.accessToken = body.access_token;
+    } catch (err) {
+      return Promise.reject(err.response.data);
     }
-    this.accessToken = body.access_token;
   }
 
   public isRefreshTokenAvailable(): boolean {

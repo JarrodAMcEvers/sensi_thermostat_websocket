@@ -10,7 +10,7 @@ const mockConfig = {
 };
 jest.mock('../src/config', () => mockConfig);
 
-import {Authorization} from '../src/authorization';
+import { Authorization } from '../src/authorization';
 
 describe('authorization', () => {
   jest.setTimeout(2000);
@@ -23,9 +23,10 @@ describe('authorization', () => {
     });
 
     test('call endpoint and return token', async () => {
-      const accessToken  = faker.random.uuid();
+      const accessToken = faker.random.uuid();
       const refreshToken = faker.random.uuid();
-      const response = {access_token: accessToken, refresh_token: refreshToken};
+      const response = { access_token: accessToken, refresh_token: refreshToken };
+      // mockHttps.request.mockReturnValue =
 
       let tokenMock = nock(mockConfig.token_endpoint)
         .post('/token', {
@@ -44,25 +45,25 @@ describe('authorization', () => {
       tokenMock.done();
     });
 
-    test('rejects with error if statusCode is a 400', async () => {
+    test('rejects with error if request fails', async () => {
       let error = faker.lorem.word();
       nock(mockConfig.token_endpoint)
         .post('/token')
-        .reply(400, {error: error});
+        .reply(400, { error: error });
 
       try {
         await authorization.login();
         expect(true).toBeFalsy();
       } catch (err) {
-        expect(err).toEqual({error: error});
+        expect(err).toEqual({ error: error });
       }
     });
   });
 
   describe('refreshAccessToken', () => {
-    const accessToken  = faker.random.uuid();
+    const accessToken = faker.random.uuid();
     const refreshToken = faker.random.uuid();
-    const response = {access_token: accessToken, refresh_token: refreshToken};
+    const response = { access_token: accessToken, refresh_token: refreshToken };
 
     beforeEach(async () => {
       nock(mockConfig.token_endpoint)
@@ -75,10 +76,10 @@ describe('authorization', () => {
         })
         .reply(200, response);
 
-        authorization = new Authorization();
-        await authorization.login();
+      authorization = new Authorization();
+      await authorization.login();
 
-        nock.cleanAll();
+      nock.cleanAll();
     });
 
     test('refresh access token', async () => {
@@ -104,13 +105,13 @@ describe('authorization', () => {
       let error = faker.lorem.word();
       nock(mockConfig.token_endpoint)
         .post('/token')
-        .reply(400, {error: error});
+        .reply(400, { error: error });
 
       try {
         await authorization.refreshAccessToken();
         expect(true).toBeFalsy();
       } catch (err) {
-        expect(err).toEqual({error: error});
+        expect(err).toEqual({ error: error });
       }
     });
   });
