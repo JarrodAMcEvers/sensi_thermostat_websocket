@@ -22,7 +22,7 @@ sets the temperature and mode for the thermostat
 | Field| Data Type| Description|
 | ----------- | ----------- | ----------- |
 | icd_id|string|identifier of the thermostat|
-|mode|enum<br>values: heat,cool|operational mode of the thermostat|
+|mode|enum<br>values: heat,aux,cool,auto|operational mode of the thermostat|
 |target_temp|int|temperature for thermostat|
 |scale|enum <br>values: f = fahrenheit, c = celsius|temperature scale|
 
@@ -43,9 +43,26 @@ changes the thermostat operating mode to heat, cool, or off
 | Field| Data Type |Description|
 | ----------- |  ----------- | ----------- |
 | icd_id|string|identifier of the thermostat|
-|mode|enum<br>values:heat,cool,off|operational mode of the thermostat|
+|value|enum<br>values:heat,cool,off|operational mode of the thermostat|
 
+### set_fan_mode
 
+turn the fan on or off
+
+#### Request
+##### Example body
+
+```json
+{
+    "icd_id":"0a-50-30-62-eb-18-ff-ff",
+    "value":"on"
+}
+```
+##### Fields
+| Field| Data Type |Description|
+| ----------- |  ----------- | ----------- |
+| icd_id|string|identifier of the thermostat|
+|value|enum<br>values:on,auto|operational mode of the fan|
 
 ### get_schedule_projection
 
@@ -296,3 +313,98 @@ Used to adjust the temperature used by the thermostat from what's read. This is 
 | Field| Description|
 | ----------- | ----------- |
 | icd_id|identifier of the thermostat|
+
+### get_capabilities
+
+#### Request
+```json
+{
+  "scale":"f",
+  "icd_id":"0a-50-30-62-eb-18-ff-ff"
+}
+```
+#### Response
+```json
+{
+  "last_changed_timestamp": 1648112349,
+  "early_start": "yes",
+  "boost": { "aux": "no", "cool": "no", "heat": "yes" },
+  "aux_cycle_rate": "yes",
+  "cool_cycle_rate": "yes",
+  "heat_cycle_rate": "yes",
+  "dual_fuel_outdoor_temperature_setpoint": "no",
+  "compressor_lockout": "yes",
+  "aux_cycle_rate_steps": ["slow", "medium", "fast"],
+  "cool_cycle_rate_steps": ["slow", "medium", "fast"],
+  "heat_cycle_rate_steps": ["slow", "medium", "fast"],
+  "keypad_lockout": "yes",
+  "continuous_backlight": "yes",
+  "degrees_fc": "yes",
+  "temp_offset": "yes",
+  "humidity_offset": "yes",
+  "display_humidity": "yes",
+  "display_outdoor_temp": "yes",
+  "display_time": "yes",
+  "temp_offset_lower_bound": -5,
+  "temp_offset_upper_bound": 5,
+  "humidity_offset_lower_bound": -25,
+  "humidity_offset_upper_bound": 25,
+  "min_heat_setpoint": 45,
+  "min_cool_setpoint": 45,
+  "max_heat_setpoint": 99,
+  "max_cool_setpoint": 99,
+  "heat_setpoint_ceiling": "yes",
+  "cool_setpoint_floor": "yes",
+  "lowest_heat_setpoint_ceiling": 60,
+  "highest_cool_setpoint_floor": 85,
+  "scheduling": "yes",
+  "max_steps_per_day": 8,
+  "days_per_schedule": 7,
+  "hold_modes": { "temporary": "yes", "permanent": "no", "curtailment": "no" },
+  "circulating_fan": {
+    "capable": "yes",
+    "max_duty_cycle": 100,
+    "min_duty_cycle": 10,
+    "step": 5
+  },
+  "partial_keypad_lockout": {
+    "setpoint": "yes",
+    "system_mode": "yes",
+    "fan_mode": "yes",
+    "schedule_mode": "yes",
+    "settings_menu": "yes"
+  },
+  "indoor_equipment": "electric",
+  "outdoor_equipment": "heatpump",
+  "indoor_stages": 2,
+  "outdoor_stages": 2,
+  "fan_stages": 0,
+  "out_of_box_configuration": "yes",
+  "reversing_valve_mode": "O",
+  "operating_mode_settings": {
+    "off": "yes",
+    "heat": "yes",
+    "cool": "yes",
+    "aux": "yes",
+    "auto": "yes"
+  },
+  "fan_mode_settings": { "auto": "yes", "on": "yes", "smart": "no" },
+  "contractor_info": "no",
+  "humidity_control": {
+    "deadband": 10,
+    "humidification": { "step": 5, "min": 5, "max": 50, "types": [] },
+    "dehumidification": {
+      "step": 5,
+      "min": 40,
+      "max": 95,
+      "types": ["overcooling"]
+    }
+  },
+  "open_adr": {
+    "demand_response": "yes",
+    "direct_load_controls": "no",
+    "use_of_pricing": "yes"
+  },
+  "icd_id": "0a-50-30-62-eb-18-ff-ff"
+}
+```
