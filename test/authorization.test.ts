@@ -1,12 +1,17 @@
 import * as faker from 'faker';
 import * as nock from 'nock';
 
+const token_endpoint = faker.internet.url();
+const email = faker.internet.userName();
+const password = faker.internet.password();
+const client_id = faker.random.uuid();
+const client_secret = faker.random.uuid();
 const mockConfig = {
-  token_endpoint: faker.internet.url(),
-  email: faker.internet.userName(),
-  password: faker.internet.password(),
-  client_id: faker.random.uuid(),
-  client_secret: faker.random.uuid()
+  token_endpoint: token_endpoint,
+  email: email,
+  password: password,
+  client_id: client_id,
+  client_secret: client_secret
 };
 jest.mock('../src/config', () => mockConfig);
 
@@ -19,14 +24,15 @@ describe('authorization', () => {
   describe('login', () => {
     beforeEach(() => {
       authorization = new Authorization();
-      nock.cleanAll();
     });
+    afterEach(() => {
+      nock.cleanAll();
+    })
 
     test('call endpoint and return token', async () => {
       const accessToken = faker.random.uuid();
       const refreshToken = faker.random.uuid();
       const response = { access_token: accessToken, refresh_token: refreshToken };
-      // mockHttps.request.mockReturnValue =
 
       let tokenMock = nock(mockConfig.token_endpoint)
         .post('/token', {
@@ -57,6 +63,24 @@ describe('authorization', () => {
       } catch (err) {
         expect(err).toEqual({ error: error });
       }
+    });
+
+    ['client_id', 'client_secret', 'email', 'password'].forEach(testCase => {
+      test(`does not call login endpoint if ${testCase} is not set in the config`, async () => {
+        const value = JSON.parse(JSON.stringify(mockConfig[`${testCase}`]));
+        mockConfig[`${testCase}`] = null;
+        const tokenNock = nock(mockConfig.token_endpoint)
+          .post('/token')
+          .reply(400, {});
+
+        try {
+          await authorization.login();
+          expect(true).toBeFalsy();
+        } catch (err) {
+          expect(tokenNock.isDone()).toBeFalsy();
+          mockConfig[`${testCase}`] = value;
+        }
+      });
     });
   });
 

@@ -9,6 +9,10 @@ export class Authorization {
 
   public async login(): Promise<void> {
     try {
+      if (config.client_id == null || config.client_secret == null || config.email == null || config.password == null) {
+        return;
+      }
+
       const response = await axios({
         url: `${config.token_endpoint}/token`,
         method: 'POST',
