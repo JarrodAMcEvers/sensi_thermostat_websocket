@@ -1,18 +1,23 @@
 import { Authorization } from "../authorization";
 import { SocketHelper } from "./socket_helper";
-import { Thermostats } from "../Thermostat";
 import * as config from "../config";
 import * as socketIO from "socket.io-client";
 import { SocketState } from "../types/types";
 
 export class Socket {
   private authorization: Authorization;
-  private thermostats: Thermostats;
   socketConnection: any = null;
+  onListeners: any = [
+    {
+      on: "state",
+      fn: (data: any) => {
+        SocketHelper.stateHandler(data);
+      },
+    },
+  ];
 
   constructor(authorization: Authorization) {
     this.authorization = authorization;
-    this.thermostats = new Thermostats();
   }
 
   async connectToSocket() {
@@ -37,7 +42,6 @@ export class Socket {
 
   async startSocketConnection() {
     await this.connectToSocket();
-    const socketHelper = new SocketHelper();
 
     this.socketConnection.on("connect", () => {
       console.log("connected");
@@ -47,14 +51,13 @@ export class Socket {
         If you try to emit an event (get_weather, etc.), it will get rejected
         with an unauthorized error.
       */
-      this.socketConnection.on("state", (data: any) => {
-        this.thermostats.updateThermostats(data);
-        socketHelper.stateHandler(data);
+      this.onListeners.forEach((listener) => {
+        this.socketConnection.on(listener.on, listener.fn);
       });
     });
 
     // TODO: add reconnect logic
-    this.socketConnection.on("disconnect", socketHelper.disconnectHandler);
+    this.socketConnection.on("disconnect", SocketHelper.disconnectHandler);
 
     this.socketConnection.on("error", async (error: Error) => {
       console.error("socket error", error);
@@ -66,5 +69,13 @@ export class Socket {
     });
 
     return this.socketConnection;
+  }
+
+  async on(listener: String, fn: Function) {
+    this.onListeners.push({ on: listener, fn });
+  }
+
+  async emit(event: string, body: any) {
+    this.socketConnection.emit(event, body);
   }
 }

@@ -1,17 +1,27 @@
+import { Socket } from "./socket/socket";
+import { Registration } from "./types/types";
+
 export class Thermostat {
   readonly icd_id: string;
   state: any;
+  registration: Registration;
+  socket: Socket = null;
 
-  constructor(data: any) {
+  constructor(socket: Socket, data: any) {
     if (data.icd_id !== undefined) {
       this.icd_id = data.icd_id;
     }
     if (data.state !== undefined) {
       this.state = data.state;
     }
+    if (data.registration !== undefined) {
+      this.registration = data.registration;
+    }
+    if (socket) this.socket = socket;
   }
 
-  get thermostat_temp() {
+  // The temperature read
+  get thermostatSensor_temp() {
     if (!this.state) return NaN;
 
     if (!this.state.display_temp) return NaN;
@@ -19,9 +29,15 @@ export class Thermostat {
     if (this.state.temp_offset === undefined) return NaN;
 
     const thermostat_temp: number =
-      this.state.display_temp + this.state.temp_offset;
+      this.state.display_temp - this.state.temp_offset;
 
     return thermostat_temp;
+  }
+
+  update(stateUpdates: any) {
+    if (stateUpdates.registration)
+      this.registration = stateUpdates.registration;
+    if (stateUpdates.state) this.updateState(stateUpdates.state);
   }
 
   updateState(stateUpdates: any) {
@@ -30,11 +46,32 @@ export class Thermostat {
       : stateUpdates;
     this.state = updatedState;
   }
+
+  setTempOffset(sensorTemperature: number) {
+    const currentTempAtThermostatSensor = this.thermostatSensor_temp;
+    const temperatureDifference =
+      sensorTemperature - currentTempAtThermostatSensor;
+    const scale = 2;
+    const temperatureDifferenceRounded =
+      Math.round(temperatureDifference * scale) / scale;
+    const changeInOffset =
+      this.state.temp_offset - temperatureDifferenceRounded;
+    if (changeInOffset != 0) {
+      console.log(`Change temperature by ${changeInOffset}`);
+      this.socket.emit("set_temp_offset", {
+        icd_id: this.icd_id,
+        value: temperatureDifferenceRounded,
+      });
+    }
+  }
 }
 
 export class Thermostats extends Map<string, Thermostat> {
-  constructor(otherMap?: Map<string, Thermostat>) {
+  socket: Socket = null;
+
+  constructor(socket: Socket, otherMap?: Map<string, Thermostat>) {
     super(otherMap);
+    this.socket = socket;
   }
 
   updateThermostats(data: any) {
@@ -42,12 +79,12 @@ export class Thermostats extends Map<string, Thermostat> {
       let thermostat: Thermostat = null;
       if (this.has(thermostatRaw.icd_id)) {
         thermostat = this.get(thermostatRaw.icd_id);
-        thermostat.updateState(thermostatRaw.state);
+        thermostat.update(thermostatRaw);
       } else {
-        thermostat = new Thermostat(thermostatRaw);
+        thermostat = new Thermostat(this.socket, thermostatRaw);
       }
       this.set(thermostat.icd_id, thermostat);
-      console.log(`thermostat temp: ${thermostat.thermostat_temp}`);
+      console.log(`thermostat temp: ${thermostat.thermostatSensor_temp}`);
     });
   }
 }
