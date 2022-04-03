@@ -305,6 +305,29 @@ The compressor lockout prevents rapidly cycling on and off the compressor to pre
 | icd_id | string                   | identifier of the thermostat        |
 | value  | enum <br>values: on, off | is the compressor lockout on or off |
 
+### set_display_scale
+
+What temperature scale will be shown in the app and on the thermostat.
+
+#### Request
+
+##### Example body
+
+```json
+{
+  "value": "f",
+  "icd_id": "0a-50-30-62-eb-18-ff-ff"
+}
+```
+
+#### Fields
+
+| Field  | Data Type             | Description                  |
+| ------ | --------------------- | ---------------------------- |
+| icd_id | string                | identifier of the thermostat |
+| value  | enum <br>values: f, c | celsius or fahrenheit        |
+
+
 ## Events/Topics
 
 ### state
