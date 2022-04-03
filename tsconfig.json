@@ -15,7 +15,8 @@
       "es6"
     ],
     "sourceMap": true,
-    "allowJs": true
+    "allowJs": true,
+    "outDir": "build/"
   },
   "include": [
     "src/**/*",
