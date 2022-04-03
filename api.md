@@ -327,6 +327,71 @@ What temperature scale will be shown in the app and on the thermostat.
 | icd_id | string                | identifier of the thermostat |
 | value  | enum <br>values: f, c | celsius or fahrenheit        |
 
+### set_display_time
+
+Sets if the current time is shown on the thermostat
+
+#### Request
+
+##### Example body
+
+```json
+{
+  "icd_id": "0a-50-30-62-eb-18-ff-ff",
+  "value": "off"
+}
+```
+
+#### Fields
+
+| Field  | Data Type                | Description                        |
+| ------ | ------------------------ | ---------------------------------- |
+| icd_id | string                   | identifier of the thermostat       |
+| value  | enum <br>values: on, off | display the time on the thermostat |
+
+### set_display_humidity
+
+Sets if the current humidity is shown on the thermostat
+
+#### Request
+
+##### Example body
+
+```json
+{
+  "icd_id": "0a-50-30-62-eb-18-ff-ff",
+  "value": "off"
+}
+```
+
+#### Fields
+
+| Field  | Data Type                | Description                            |
+| ------ | ------------------------ | -------------------------------------- |
+| icd_id | string                   | identifier of the thermostat           |
+| value  | enum <br>values: on, off | display the humidity on the thermostat |
+
+### set_continuous_backlight
+
+Sets if the backlight should be continuously on
+
+#### Request
+
+##### Example body
+
+```json
+{
+  "icd_id": "0a-50-30-62-eb-18-ff-ff",
+  "value": "off"
+}
+```
+
+#### Fields
+
+| Field  | Data Type                | Description                               |
+| ------ | ------------------------ | ----------------------------------------- |
+| icd_id | string                   | identifier of the thermostat              |
+| value  | enum <br>values: on, off | sets if the backlight should always be on |
 
 ## Events/Topics
 
