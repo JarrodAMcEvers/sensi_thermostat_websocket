@@ -4,12 +4,24 @@ import * as config from './config';
 const axios = require('axios').default;
 
 export class Authorization {
+  private clientId: string;
+  private clientSecret: string;
+  private email: string;
+  private password: string;
+
   public accessToken: string = null;
   private refreshToken: string = null;
 
+  constructor(client_id: string, client_secret: string, email: string, password: string) {
+    this.clientId = client_id;
+    this.clientSecret = client_secret;
+    this.email = email;
+    this.password = password;
+  }
+
   public async login(): Promise<void> {
     try {
-      if (config.client_id == null || config.client_secret == null || config.email == null || config.password == null) {
+      if (!this.clientId || !this.clientSecret || !this.email || !this.password) {
         return;
       }
 
@@ -18,14 +30,15 @@ export class Authorization {
         method: 'POST',
         data: {
           grant_type: 'password',
-          client_id: config.client_id,
-          client_secret: config.client_secret,
-          username: config.email,
-          password: config.password
+          client_id: this.clientId,
+          client_secret: this.clientSecret,
+          username: this.email,
+          password: this.password
         }
       });
 
       const body: SensiOAuthResponse = response.data;
+      console.log('body', body);
 
       this.accessToken = body.access_token;
       this.refreshToken = body.refresh_token;
@@ -41,8 +54,8 @@ export class Authorization {
         method: 'POST',
         data: {
           grant_type: 'refresh_token',
-          client_id: config.client_id,
-          client_secret: config.client_secret,
+          client_id: this.clientId,
+          client_secret: this.clientSecret,
           refresh_token: this.refreshToken
         }
       });
