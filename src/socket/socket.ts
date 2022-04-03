@@ -6,7 +6,6 @@ import { Thermostats } from "../Thermostat";
 
 export class Socket {
   private authorization: Authorization;
-  private thermostats: Thermostats;
   socketConnection: any = null;
   onListeners: any = [
     {
@@ -19,7 +18,6 @@ export class Socket {
 
   constructor(authorization: Authorization) {
     this.authorization = authorization;
-    this.thermostats = new Thermostats();
   }
 
   async connectToSocket() {
@@ -58,7 +56,7 @@ export class Socket {
     });
 
     // TODO: add reconnect logic
-    this.socketConnection.on("disconnect", socketHelper.disconnectHandler);
+    this.socketConnection.on("disconnect", SocketHelper.disconnectHandler);
 
     this.socketConnection.on('error', async (error: Error) => {
       console.error('socket error', error);
