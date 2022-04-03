@@ -77,6 +77,7 @@ describe('authorization', () => {
           await testCase.auth.login();
           expect(true).toBeFalsy();
         } catch (err) {
+          expect(err).toEqual({ message: 'Missing one or more of the required environment variables: CLIENT_ID, CLIENT_SECRET, EMAIL, PASSWORD.' });
           expect(tokenNock.isDone()).toBeFalsy();
         }
       });

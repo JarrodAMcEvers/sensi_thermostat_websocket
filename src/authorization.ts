@@ -22,7 +22,7 @@ export class Authorization {
   public async login(): Promise<void> {
     try {
       if (!this.clientId || !this.clientSecret || !this.email || !this.password) {
-        return;
+        return Promise.reject({ message: 'Missing one or more of the required environment variables: CLIENT_ID, CLIENT_SECRET, EMAIL, PASSWORD.' });
       }
 
       const response = await axios({
