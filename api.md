@@ -22,7 +22,7 @@ sets the temperature and mode for the thermostat
 | Field| Data Type| Description|
 | ----------- | ----------- | ----------- |
 | icd_id|string|identifier of the thermostat|
-|mode|enum<br>values: heat,cool|operational mode of the thermostat|
+|mode|enum<br>values: auto, heat,cool|operating mode of the thermostat|
 |target_temp|int|temperature for thermostat|
 |scale|enum <br>values: f = fahrenheit, c = celsius|temperature scale|
 
@@ -43,60 +43,27 @@ changes the thermostat operating mode to heat, cool, or off
 | Field| Data Type |Description|
 | ----------- |  ----------- | ----------- |
 | icd_id|string|identifier of the thermostat|
-|mode|enum<br>values:heat,cool,off|operational mode of the thermostat|
+|mode|enum<br>values:auto,heat,cool,off|operating mode of the thermostat|
 
 
+### set_temp_offset
 
-### get_schedule_projection
-
-Find the upcoming changes to the target temperature.
+Used to adjust the temperature used by the thermostat from what's read. This is useful when trying to create a remote temperature sensor.
 
 #### Request
 ##### Example body
 
 ```json
 {
-    "scale":"f",
-    "icd_id":"0a-50-30-62-eb-18-ff-ff"
-}
-```
-
-#### Fields
-| Field| Data Type |Description|
-| ----------- |  ----------- | ----------- |
-| icd_id|string|identifier of the thermostat|
-|scale|enum <br>values: f = fahrenheit, c = celsius|temperature scale|
-
-#### Response
-##### Example body
-```json
-{
-    "icd_id": "0a-50-30-62-eb-18-ff-ff",
-    "schedule_id": 12560564,
-    "mode": "cool",
-    "hold": { "type": "temporary", "end": 1648346400, "cool": 78 },
-    "projection": [
-        { "start": 1648322531, "cool": 78 },
-        { "start": 1648346400, "cool": 78 },
-        { "start": 1648375200, "cool": 75 }
-    ]
+    "icd_id":"0a-50-30-62-eb-18-ff-ff",
+    "value":0
 }
 ```
 #### Fields
 | Field| Data Type |Description|
 | ----------- |  ----------- | ----------- |
 | icd_id|string|identifier of the thermostat|
-|schedule_id|int|unknown|
-|mode|enum<br>values: heat,cool|current operating mode|
-|hold|strut|optional: temperature hold in place|
-|hold.type|enum<br>values:temporary,| type of hold |
-|hold.end|unix epoch time| time the hold will end |
-|projection|strut|upcoming changes to the target temperature|
-|projection.start|unix epoch time|time when the temperature will change|
-|projection.cool|int|target cooling temperature|
-|projection.heat|int|target heating temperature|
-
-
+| value|int|adjustment to the temperature read at the thermostat|
 
 ### get_weather
 Provides the current weather and forecast for a postal code.
@@ -141,24 +108,157 @@ Provides the current weather and forecast for a postal code.
 |weather|string|description of current condition|
 |icon|url|S3 location for the image|
 
-### set_temp_offset
+### get_schedule_projection
 
-Used to adjust the temperature used by the thermostat from what's read. This is useful when trying to create a remote temperature sensor.
+Find the upcoming changes to the target temperature.
 
 #### Request
 ##### Example body
 
 ```json
 {
-    "icd_id":"0a-50-30-62-eb-18-ff-ff",
-    "value":0
+    "scale":"f",
+    "icd_id":"0a-50-30-62-eb-18-ff-ff"
 }
 ```
+
 #### Fields
 | Field| Data Type |Description|
 | ----------- |  ----------- | ----------- |
 | icd_id|string|identifier of the thermostat|
-| value|int|adjustment to the temperature read at the thermostat|
+|scale|enum <br>values: f = fahrenheit, c = celsius|temperature scale|
+
+### get_schedules_with_limits
+
+Gets the schedule for a thermostat.
+
+#### Request
+##### Example body
+
+```json
+{
+    "scale":"f",
+    "icd_id":"0a-50-30-62-eb-18-ff-ff"
+}
+```
+
+#### Fields
+| Field| Data Type |Description|
+| ----------- |  ----------- | ----------- |
+| icd_id|string|identifier of the thermostat|
+|scale|enum <br>values: f = fahrenheit, c = celsius|temperature scale|
+
+#### Response
+##### Example body
+```json
+{
+  "auto": [
+    {
+      "id": 12345670,
+      "name": "Auto",
+      "mode": "auto",
+      "schedule": {
+        "fri": {
+          "06:00": { "cool": 75, "heat": 70 },
+          "08:00": { "cool": 83, "heat": 62 },
+          "17:00": { "cool": 75, "heat": 70 },
+          "22:00": { "cool": 78, "heat": 62 }
+        },
+        "mon": {
+          "06:00": { "cool": 75, "heat": 70 },
+          "08:00": { "cool": 83, "heat": 62 },
+          "17:00": { "cool": 75, "heat": 70 },
+          "22:00": { "cool": 78, "heat": 62 }
+        },
+        "sat": {
+          "06:00": { "cool": 75, "heat": 70 },
+          "08:00": { "cool": 83, "heat": 62 },
+          "17:00": { "cool": 75, "heat": 70 },
+          "22:00": { "cool": 78, "heat": 62 }
+        },
+        "sun": {
+          "06:00": { "cool": 75, "heat": 70 },
+          "08:00": { "cool": 83, "heat": 62 },
+          "17:00": { "cool": 75, "heat": 70 },
+          "22:00": { "cool": 78, "heat": 62 }
+        },
+        "thu": {
+          "06:00": { "cool": 75, "heat": 70 },
+          "08:00": { "cool": 83, "heat": 62 },
+          "17:00": { "cool": 75, "heat": 70 },
+          "22:00": { "cool": 78, "heat": 62 }
+        },
+        "tue": {
+          "06:00": { "cool": 75, "heat": 70 },
+          "08:00": { "cool": 83, "heat": 62 },
+          "17:00": { "cool": 75, "heat": 70 },
+          "22:00": { "cool": 78, "heat": 62 }
+        },
+        "wed": {
+          "06:00": { "cool": 75, "heat": 70 },
+          "08:00": { "cool": 83, "heat": 62 },
+          "17:00": { "cool": 75, "heat": 70 },
+          "22:00": { "cool": 78, "heat": 62 }
+        }
+      },
+      "is_active": true
+    }
+  ],
+  "heat": [
+    {
+      "id": 12345671,
+      "name": "Heat",
+      "mode": "heat",
+      "schedule": {
+        "fri": { "06:15": { "heat": 70 }, "21:00": { "heat": 65 } },
+        "mon": { "06:15": { "heat": 70 }, "21:00": { "heat": 65 } },
+        "sat": { "06:15": { "heat": 70 }, "21:00": { "heat": 65 } },
+        "sun": { "06:15": { "heat": 70 }, "21:00": { "heat": 65 } },
+        "thu": { "06:15": { "heat": 70 }, "21:00": { "heat": 65 } },
+        "tue": { "06:15": { "heat": 70 }, "21:00": { "heat": 65 } },
+        "wed": { "06:15": { "heat": 70 }, "21:00": { "heat": 65 } }
+      },
+      "is_active": true
+    }
+  ],
+  "cool": [
+    {
+      "id": 12345672,
+      "name": "Cool",
+      "mode": "cool",
+      "schedule": {
+        "fri": { "06:00": { "cool": 75 }, "22:00": { "cool": 78 } },
+        "mon": { "06:00": { "cool": 75 }, "22:00": { "cool": 78 } },
+        "sat": { "06:00": { "cool": 75 }, "22:00": { "cool": 78 } },
+        "sun": { "06:00": { "cool": 75 }, "22:00": { "cool": 78 } },
+        "thu": { "06:00": { "cool": 75 }, "22:00": { "cool": 78 } },
+        "tue": { "06:00": { "cool": 75 }, "22:00": { "cool": 78 } },
+        "wed": { "06:00": { "cool": 75 }, "22:00": { "cool": 78 } }
+      },
+      "is_active": true
+    }
+  ],
+  "icd_id": "0a-50-30-62-eb-18-ff-ff",
+}
+```
+#### Fields
+##### Core Response
+| Field| Data Type |Description|
+| ----------- |  ----------- | ----------- |
+| icd_id|string|identifier of the thermostat|
+|auto|array of <schedules>|schedules available when the thermostat is in auto mode|
+|heat|array of <schedules>|schedules available when the thermostat is in heat mode|
+|cool|array of <schedules>|schedules available when the thermostat is in cool mode|
+|is_active|boolean|indicates if the schedule is used for the operating mode|
+|schedule|strut|details on the schedule dictionary based on day of week and 24 hour format|
+
+##### Schedule
+| Field| Data Type |Description|
+| ----------- |  ----------- | ----------- |
+| id|int|identifier of the schedule|
+| name|string|display name for the schedule|
+| mode|enum<br>values: auto, heat,cool|thermostat operating mode for the schedule|
+
 
 ## Events/Topics
 
