@@ -12,144 +12,164 @@ sets the temperature and mode for the thermostat
 
 ```json
 {
-    "icd_id":"0a-50-30-62-eb-18-ff-ff",
-    "mode":"cool",
-    "target_temp":79,
-    "scale":"f"
+  "icd_id": "0a-50-30-62-eb-18-ff-ff",
+  "mode": "cool",
+  "target_temp": 79,
+  "scale": "f"
 }
 ```
+
 ##### Fields
-| Field| Data Type| Description|
-| ----------- | ----------- | ----------- |
-| icd_id|string|identifier of the thermostat|
-|mode|enum<br>values: auto, heat,cool|operating mode of the thermostat|
-|target_temp|int|temperature for thermostat|
-|scale|enum <br>values: f = fahrenheit, c = celsius|temperature scale|
+
+| Field       | Data Type                                    | Description                      |
+| ----------- | -------------------------------------------- | -------------------------------- |
+| icd_id      | string                                       | identifier of the thermostat     |
+| mode        | enum<br>values: auto, heat,cool              | operating mode of the thermostat |
+| target_temp | int                                          | temperature for thermostat       |
+| scale       | enum <br>values: f = fahrenheit, c = celsius | temperature scale                |
 
 ### set_operating_mode
 
 changes the thermostat operating mode to heat, cool, or off
 
 #### Request
+
 ##### Example body
 
 ```json
 {
-    "icd_id":"0a-50-30-62-eb-18-ff-ff",
-    "value":"heat"
+  "icd_id": "0a-50-30-62-eb-18-ff-ff",
+  "value": "heat"
 }
 ```
-##### Fields
-| Field| Data Type |Description|
-| ----------- |  ----------- | ----------- |
-| icd_id|string|identifier of the thermostat|
-|mode|enum<br>values:auto,heat,cool,off|operating mode of the thermostat|
 
+##### Fields
+
+| Field  | Data Type                         | Description                      |
+| ------ | --------------------------------- | -------------------------------- |
+| icd_id | string                            | identifier of the thermostat     |
+| mode   | enum<br>values:auto,heat,cool,off | operating mode of the thermostat |
 
 ### set_temp_offset
 
 Used to adjust the temperature used by the thermostat from what's read. This is useful when trying to create a remote temperature sensor.
 
 #### Request
+
 ##### Example body
 
 ```json
 {
-    "icd_id":"0a-50-30-62-eb-18-ff-ff",
-    "value":0
+  "icd_id": "0a-50-30-62-eb-18-ff-ff",
+  "value": 0
 }
 ```
+
 #### Fields
-| Field| Data Type |Description|
-| ----------- |  ----------- | ----------- |
-| icd_id|string|identifier of the thermostat|
-| value|int|adjustment to the temperature read at the thermostat|
+
+| Field  | Data Type | Description                                          |
+| ------ | --------- | ---------------------------------------------------- |
+| icd_id | string    | identifier of the thermostat                         |
+| value  | int       | adjustment to the temperature read at the thermostat |
 
 ### get_weather
+
 Provides the current weather and forecast for a postal code.
 
 #### Request
+
 ##### Example body
 
 ```json
 {
-    "postal_code":"10042",
-    "scale":"f"
+  "postal_code": "10042",
+  "scale": "f"
 }
 ```
-#### Fields
-| Field| Data Type |Description|
-| ----------- |  ----------- | ----------- |
-| postal_code |string|postal code - to figure out internationalization|
-|scale|enum <br>values: f = fahrenheit, c = celsius|temperature scale|
 
+#### Fields
+
+| Field       | Data Type                                    | Description                                      |
+| ----------- | -------------------------------------------- | ------------------------------------------------ |
+| postal_code | string                                       | postal code - to figure out internationalization |
+| scale       | enum <br>values: f = fahrenheit, c = celsius | temperature scale                                |
 
 #### Response
+
 ##### Example body
+
 ```json
 {
-    "city": "New York",
-    "state": "Ny",
-    "high_temp": 59.81,
-    "low_temp": 43.28,
-    "current_temp": 58.05,
-    "weather": "Clear",
-    "icon": "https://s3.amazonaws.com/sensi-weather-icons/clear-day.png"
+  "city": "New York",
+  "state": "Ny",
+  "high_temp": 59.81,
+  "low_temp": 43.28,
+  "current_temp": 58.05,
+  "weather": "Clear",
+  "icon": "https://s3.amazonaws.com/sensi-weather-icons/clear-day.png"
 }
 ```
+
 #### Fields
-| Field| Data Type |Description|
-| ----------- |  ----------- | ----------- |
-| city |string|city|
-| state |string|state|
-|high_temp|decimal|forecasted high temperature; always for the current date|
-|low_temp|decimal|forecasted low temperature; always for the current date|
-|current_temp|decimal|current temperature for the location|
-|weather|string|description of current condition|
-|icon|url|S3 location for the image|
+
+| Field        | Data Type | Description                                              |
+| ------------ | --------- | -------------------------------------------------------- |
+| city         | string    | city                                                     |
+| state        | string    | state                                                    |
+| high_temp    | decimal   | forecasted high temperature; always for the current date |
+| low_temp     | decimal   | forecasted low temperature; always for the current date  |
+| current_temp | decimal   | current temperature for the location                     |
+| weather      | string    | description of current condition                         |
+| icon         | url       | S3 location for the image                                |
 
 ### get_schedule_projection
 
 Find the upcoming changes to the target temperature.
 
 #### Request
+
 ##### Example body
 
 ```json
 {
-    "scale":"f",
-    "icd_id":"0a-50-30-62-eb-18-ff-ff"
+  "scale": "f",
+  "icd_id": "0a-50-30-62-eb-18-ff-ff"
 }
 ```
 
 #### Fields
-| Field| Data Type |Description|
-| ----------- |  ----------- | ----------- |
-| icd_id|string|identifier of the thermostat|
-|scale|enum <br>values: f = fahrenheit, c = celsius|temperature scale|
+
+| Field  | Data Type                                    | Description                  |
+| ------ | -------------------------------------------- | ---------------------------- |
+| icd_id | string                                       | identifier of the thermostat |
+| scale  | enum <br>values: f = fahrenheit, c = celsius | temperature scale            |
 
 ### get_schedules_with_limits
 
 Gets the schedule for a thermostat.
 
 #### Request
+
 ##### Example body
 
 ```json
 {
-    "scale":"f",
-    "icd_id":"0a-50-30-62-eb-18-ff-ff"
+  "scale": "f",
+  "icd_id": "0a-50-30-62-eb-18-ff-ff"
 }
 ```
 
 #### Fields
-| Field| Data Type |Description|
-| ----------- |  ----------- | ----------- |
-| icd_id|string|identifier of the thermostat|
-|scale|enum <br>values: f = fahrenheit, c = celsius|temperature scale|
+
+| Field  | Data Type                                    | Description                  |
+| ------ | -------------------------------------------- | ---------------------------- |
+| icd_id | string                                       | identifier of the thermostat |
+| scale  | enum <br>values: f = fahrenheit, c = celsius | temperature scale            |
 
 #### Response
+
 ##### Example body
+
 ```json
 {
   "auto": [
@@ -238,33 +258,59 @@ Gets the schedule for a thermostat.
       "is_active": true
     }
   ],
-  "icd_id": "0a-50-30-62-eb-18-ff-ff",
+  "icd_id": "0a-50-30-62-eb-18-ff-ff"
 }
 ```
+
 #### Fields
+
 ##### Core Response
-| Field| Data Type |Description|
-| ----------- |  ----------- | ----------- |
-| icd_id|string|identifier of the thermostat|
-|auto|array of <schedules>|schedules available when the thermostat is in auto mode|
-|heat|array of <schedules>|schedules available when the thermostat is in heat mode|
-|cool|array of <schedules>|schedules available when the thermostat is in cool mode|
-|is_active|boolean|indicates if the schedule is used for the operating mode|
-|schedule|strut|details on the schedule dictionary based on day of week and 24 hour format|
+
+| Field     | Data Type            | Description                                                                |
+| --------- | -------------------- | -------------------------------------------------------------------------- |
+| icd_id    | string               | identifier of the thermostat                                               |
+| auto      | array of <schedules> | schedules available when the thermostat is in auto mode                    |
+| heat      | array of <schedules> | schedules available when the thermostat is in heat mode                    |
+| cool      | array of <schedules> | schedules available when the thermostat is in cool mode                    |
+| is_active | boolean              | indicates if the schedule is used for the operating mode                   |
+| schedule  | strut                | details on the schedule dictionary based on day of week and 24 hour format |
 
 ##### Schedule
-| Field| Data Type |Description|
-| ----------- |  ----------- | ----------- |
-| id|int|identifier of the schedule|
-| name|string|display name for the schedule|
-| mode|enum<br>values: auto, heat,cool|thermostat operating mode for the schedule|
 
+| Field | Data Type                       | Description                                |
+| ----- | ------------------------------- | ------------------------------------------ |
+| id    | int                             | identifier of the schedule                 |
+| name  | string                          | display name for the schedule              |
+| mode  | enum<br>values: auto, heat,cool | thermostat operating mode for the schedule |
+
+### set_compressor_lockout
+
+The compressor lockout prevents rapidly cycling on and off the compressor to prevent damage to the the AC compressor.
+
+#### Request
+
+##### Example body
+
+```json
+{
+  "value": "on",
+  "icd_id": "0a-50-30-62-eb-18-ff-ff"
+}
+```
+
+#### Fields
+
+| Field  | Data Type                | Description                         |
+| ------ | ------------------------ | ----------------------------------- |
+| icd_id | string                   | identifier of the thermostat        |
+| value  | enum <br>values: on, off | is the compressor lockout on or off |
 
 ## Events/Topics
 
 ### state
 
 #### message format
+
 ```json
 [
   {
@@ -391,7 +437,9 @@ Gets the schedule for a thermostat.
   }
 ]
 ```
+
 #### fields
-| Field| Description|
-| ----------- | ----------- |
-| icd_id|identifier of the thermostat|
+
+| Field  | Description                  |
+| ------ | ---------------------------- |
+| icd_id | identifier of the thermostat |
