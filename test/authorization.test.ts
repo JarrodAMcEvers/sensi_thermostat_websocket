@@ -4,14 +4,11 @@ import * as nock from 'nock';
 const token_endpoint = faker.internet.url();
 const email = faker.internet.userName();
 const password = faker.internet.password();
-const client_id = faker.random.uuid();
-const client_secret = faker.random.uuid();
+const clientId = faker.random.uuid();
+const clientSecret = faker.random.uuid();
+
 const mockConfig = {
   token_endpoint: token_endpoint,
-  email: email,
-  password: password,
-  client_id: client_id,
-  client_secret: client_secret
 };
 jest.mock('../src/config', () => mockConfig);
 
@@ -23,7 +20,7 @@ describe('authorization', () => {
 
   describe('login', () => {
     beforeEach(() => {
-      authorization = new Authorization();
+      authorization = new Authorization(clientId, clientSecret, email, password);
     });
     afterEach(() => {
       nock.cleanAll();
@@ -37,10 +34,10 @@ describe('authorization', () => {
       let tokenMock = nock(mockConfig.token_endpoint)
         .post('/token', {
           grant_type: 'password',
-          client_id: mockConfig.client_id,
-          client_secret: mockConfig.client_secret,
-          username: mockConfig.email,
-          password: mockConfig.password
+          client_id: clientId,
+          client_secret: clientSecret,
+          username: email,
+          password: password
         })
         .reply(200, response);
 
@@ -65,20 +62,22 @@ describe('authorization', () => {
       }
     });
 
-    ['client_id', 'client_secret', 'email', 'password'].forEach(testCase => {
-      test(`does not call login endpoint if ${testCase} is not set in the config`, async () => {
-        const value = JSON.parse(JSON.stringify(mockConfig[`${testCase}`]));
-        mockConfig[`${testCase}`] = null;
+    [
+      { property: 'clientId', auth: new Authorization(undefined, clientSecret, email, password) },
+      { property: 'clientSecret', auth: new Authorization(clientId, undefined, email, password) },
+      { property: 'email', auth: new Authorization(clientId, clientSecret, undefined, password) },
+      { property: 'password', auth: new Authorization(clientId, clientSecret, email, undefined) }
+    ].forEach((testCase: { property: string, auth: Authorization }) => {
+      test(`does not call login endpoint if ${testCase.property} is not set in the config`, async () => {
         const tokenNock = nock(mockConfig.token_endpoint)
           .post('/token')
           .reply(400, {});
 
         try {
-          await authorization.login();
+          await testCase.auth.login();
           expect(true).toBeFalsy();
         } catch (err) {
           expect(tokenNock.isDone()).toBeFalsy();
-          mockConfig[`${testCase}`] = value;
         }
       });
     });
@@ -93,14 +92,14 @@ describe('authorization', () => {
       nock(mockConfig.token_endpoint)
         .post('/token', {
           grant_type: 'password',
-          client_id: mockConfig.client_id,
-          client_secret: mockConfig.client_secret,
-          username: mockConfig.email,
-          password: mockConfig.password
+          client_id: clientId,
+          client_secret: clientSecret,
+          username: email,
+          password: password
         })
         .reply(200, response);
 
-      authorization = new Authorization();
+      authorization = new Authorization(clientId, clientSecret, email, password);
       await authorization.login();
 
       nock.cleanAll();
@@ -112,8 +111,8 @@ describe('authorization', () => {
       let tokenMock = nock(mockConfig.token_endpoint)
         .post('/token', {
           grant_type: 'refresh_token',
-          client_id: mockConfig.client_id,
-          client_secret: mockConfig.client_secret,
+          client_id: clientId,
+          client_secret: clientSecret,
           refresh_token: refreshToken
         })
         .reply(200, { access_token: newAccessToken });

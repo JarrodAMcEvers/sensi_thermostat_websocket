@@ -58,7 +58,7 @@ describe('socket', () => {
   let authorization;
 
   beforeEach(() => {
-    authorization = new Authorization();
+    authorization = new Authorization('', '', '', '');
     mockSocketHelperObject.stateHandler.mockImplementation(() => true);
   });
 
