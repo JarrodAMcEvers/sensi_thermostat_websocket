@@ -5,6 +5,7 @@
   "author": "jarrodamcevers@gmail.com",
   "dependencies": {
     "@types/node": "12.7.12",
+    "aht20-sensor": "^0.1.1",
     "axios": "^0.26.1",
     "socket.io-client": "^2.4.0",
     "ts-node": "8.5.4",
