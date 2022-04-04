@@ -48,30 +48,40 @@ export class Thermostat {
   }
 
   setThermostatTempToSensorTemp(sensorTemperature: number) {
+    console.log(`Tempature used in thermostat: ${this.state.display_temp}`);
     console.log(`Tempature at sensor: ${sensorTemperature}`);
     const currentTempAtThermostatSensor = this.thermostatSensor_temp;
     console.log(`Tempature at thermostat: ${currentTempAtThermostatSensor}`);
     const temperatureDifference =
       sensorTemperature - currentTempAtThermostatSensor;
     console.log(`Tempature difference between sensor and thermostat: ${temperatureDifference}`);
+    const currentTempOffset = this.state.temp_offset;
+    console.log(`Current offset: ${currentTempOffset}`);
     const scale = 2;
     const temperatureDifferenceRounded =
       Math.round(temperatureDifference * scale) / scale;
-    console.log(`New offset: ${temperatureDifferenceRounded}`);
-    const currentTempOffset = this.state.temp_offset;
-    console.log(`Current offset set at thermostat ${currentTempOffset}`);
+    console.log(`Proposed offset: ${temperatureDifferenceRounded}`);
     const absChangeInTempOffset = Math.abs(temperatureDifferenceRounded - currentTempOffset);
-    if (absChangeInTempOffset < 1 || Math.abs(temperatureDifference-currentTempOffset) < 1) {
+    if (absChangeInTempOffset < 1 || Math.abs(temperatureDifference - currentTempOffset) < 1) {
       console.log("No change made");
       return;
     }
     console.log(`Changing offset by ${absChangeInTempOffset} to ${temperatureDifferenceRounded}`);
+    this.setThermostatOffset(temperatureDifferenceRounded);
+  }
+
+  setThermostatOffset(offset: number) {
     this.socket.emit("set_temp_offset", {
       icd_id: this.icd_id,
-      value: temperatureDifferenceRounded,
+      value: offset,
     });
+    // update the internal state just in case we don't get a response back before attempting the next update
+    // TODO - really do state management and check for failures
+    this.state.display_temp = this.thermostatSensor_temp + offset;
+    this.state.temp_offset = offset;
 
   }
+
 }
 
 export class Thermostats extends Map<string, Thermostat> {
