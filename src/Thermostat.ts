@@ -47,22 +47,30 @@ export class Thermostat {
     this.state = updatedState;
   }
 
-  setTempOffset(sensorTemperature: number) {
+  setThermostatTempToSensorTemp(sensorTemperature: number) {
+    console.log(`Tempature at sensor: ${sensorTemperature}`);
     const currentTempAtThermostatSensor = this.thermostatSensor_temp;
+    console.log(`Tempature at thermostat: ${currentTempAtThermostatSensor}`);
     const temperatureDifference =
       sensorTemperature - currentTempAtThermostatSensor;
+    console.log(`Tempature difference between sensor and thermostat: ${temperatureDifference}`);
     const scale = 2;
     const temperatureDifferenceRounded =
       Math.round(temperatureDifference * scale) / scale;
-    const changeInOffset =
-      this.state.temp_offset - temperatureDifferenceRounded;
-    if (changeInOffset != 0) {
-      console.log(`Change temperature by ${changeInOffset}`);
-      this.socket.emit("set_temp_offset", {
-        icd_id: this.icd_id,
-        value: temperatureDifferenceRounded,
-      });
+    console.log(`New offset: ${temperatureDifferenceRounded}`);
+    const currentTempOffset = this.state.temp_offset;
+    console.log(`Current offset set at thermostat ${currentTempOffset}`);
+    const absChangeInTempOffset = Math.abs(temperatureDifferenceRounded - currentTempOffset);
+    if (absChangeInTempOffset < 1 || Math.abs(temperatureDifference-currentTempOffset) < 1) {
+      console.log("No change made");
+      return;
     }
+    console.log(`Changing offset by ${absChangeInTempOffset} to ${temperatureDifferenceRounded}`);
+    this.socket.emit("set_temp_offset", {
+      icd_id: this.icd_id,
+      value: temperatureDifferenceRounded,
+    });
+
   }
 }
 
@@ -84,7 +92,6 @@ export class Thermostats extends Map<string, Thermostat> {
         thermostat = new Thermostat(this.socket, thermostatRaw);
       }
       this.set(thermostat.icd_id, thermostat);
-      console.log(`thermostat temp: ${thermostat.thermostatSensor_temp}`);
     });
   }
 }
