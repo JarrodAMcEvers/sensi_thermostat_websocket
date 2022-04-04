@@ -76,6 +76,8 @@ export class Socket {
   }
 
   async emit(event: string, body: any) {
+    // console.log(event);
+    // console.log(body);
     this.socketConnection.emit(event, body);
   }
 }
