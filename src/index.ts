@@ -11,6 +11,7 @@ const authorization = new Authorization(
   config.EMAIL,
   config.PASSWORD
 );
+
 const socket = new Socket(authorization);
 const thermostats = new Thermostats(socket); // mixes the business logic and data access layer but ...
 let gateway = new client.Pushgateway('http://127.0.0.1:9091');
