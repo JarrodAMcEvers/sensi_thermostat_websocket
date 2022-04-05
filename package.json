@@ -12,11 +12,18 @@
   },
   "devDependencies": {
     "@types/jest": "24.0.18",
+    "@typescript-eslint/eslint-plugin": "^5.18.0",
+    "@typescript-eslint/eslint-plugin-tslint": "^5.18.0",
+    "@typescript-eslint/parser": "^5.18.0",
+    "@typescript-eslint/typescript-estree": "^5.18.0",
+    "@typescript-eslint/utils": "^5.18.0",
+    "eslint-config-airbnb-typescript": "^16.2.0",
     "faker": "4.1.0",
     "jest": "27.3.0",
     "jest-extended": "^1.1.0",
     "nock": "12.0.3",
-    "ts-jest": "27.0.7"
+    "ts-jest": "27.0.7",
+    "undefined": "^0.1.0"
   },
   "jest": {
     "clearMocks": true,

@@ -4,9 +4,13 @@ module.exports = {
     'node': true,
     'jest': true
   },
-  'extends': 'eslint:recommended',
+  'extends': [
+    'airbnb-base',
+    'airbnb-typescript/base'
+  ],
   'parserOptions': {
-    'sourceType': 'module'
+    'sourceType': 'module',
+    'project': './tsconfig.json'
   },
   'rules': {
     'indent': [
@@ -27,6 +31,12 @@ module.exports = {
     ],
     'no-console': [
       'off'
-    ]
+    ],
+    'import/prefer-default-export': [
+      'off'
+    ],
+    '@typescript-eslint/lines-between-class-members': ['off'],
+    '@typescript-eslint/comma-dangle': ['off'],
+    '@typescript-eslint/return-await': ['off']
   }
 };

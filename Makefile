@@ -1,6 +1,6 @@
 #! /bin/bash
 
-.PHONY: build cleanup install run repl test use
+.PHONY: build cleanup install lint lint_fix run repl test use
 
 use:
 	nvm install
@@ -8,9 +8,14 @@ install: use
 	npm install
 start:
 	./node_modules/ts-node/dist/bin.js src/index.ts
-
 test:
 	./node_modules/jest/bin/jest.js
+lint:
+	./node_modules/eslint/bin/eslint.js .
+lint_fix:
+	./node_modules/eslint/bin/eslint.js . --fix
+repl:
+	./node_modules/ts-node/dist/bin.js
 
 build:
 	rm -rf .docker
@@ -27,6 +32,3 @@ down:
 
 cleanup:
 	docker rm -f sensi_websocket
-
-repl:
-	./node_modules/ts-node/dist/bin.js
