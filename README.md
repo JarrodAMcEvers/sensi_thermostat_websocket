@@ -36,3 +36,13 @@ PASSWORD=your_sensi_password
 |---|---|
 | android  | XBF?Z9U6;x3bUwe^FugbL=4ksvGjLnCQ |
 | ios | 8m7YoDninTVasvZ42;^nwrA}%FPWuVjH |
+
+## Contributing to this project
+Pull requests are always greatly appreciated!! Before submitting a pull request, make sure that the tests pass. This project uses the Jest testing framework.
+
+**If new code is added, tests are required.** 
+
+Command to run before submitting a pull request.
+```bash
+make test
+```
