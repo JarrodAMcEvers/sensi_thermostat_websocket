@@ -19,9 +19,7 @@ const mockSocketObject = {
   startSocketConnection: jest.fn(() => socketConnection)
 };
 const socket = jest.fn().mockImplementation(() => mockSocketObject);
-jest.mock('../../src/socket/socket', () => {
-  return { Socket: socket };
-});
+jest.mock('../../src/socket/socket', () => ({ Socket: socket }));
 
 import { SocketHelper } from '../../src/socket/socket_helper';
 
@@ -32,7 +30,7 @@ describe('socket_helper', () => {
   });
 
   describe('stateHandler', () => {
-    // placeholder test for now. this should be replaced with someone better besides testing the getter and setter.
+    // placeholder test for now
     // jest complains if a describe block does not have at least one test.
     test('sets data on message', async () => {
       const data = {
