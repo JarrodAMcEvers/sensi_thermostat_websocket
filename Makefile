@@ -1,9 +1,9 @@
 #! /bin/bash
-
+DIR=.
 .PHONY: build cleanup install lint lint_fix run repl test use
 
 use:
-	nvm install
+	[ -s "${NVM_DIR}/nvm.sh" ] && . "${NVM_DIR}/nvm.sh" || [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh" && nvm use
 install: use
 	npm install
 start:
@@ -11,9 +11,9 @@ start:
 test:
 	./node_modules/jest/bin/jest.js
 lint:
-	./node_modules/eslint/bin/eslint.js .
+	./node_modules/eslint/bin/eslint.js ${DIR}
 lint_fix:
-	./node_modules/eslint/bin/eslint.js . --fix
+	./node_modules/eslint/bin/eslint.js ${DIR} --fix
 repl:
 	./node_modules/ts-node/dist/bin.js
 
