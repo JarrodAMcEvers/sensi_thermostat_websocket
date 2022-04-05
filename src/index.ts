@@ -6,10 +6,10 @@ import { Thermostats } from "./Thermostat";
 import * as config from './config';
 
 const authorization = new Authorization(
-  config.client_id,
-  config.client_secret,
-  config.email,
-  config.password
+  config.CLIENT_ID,
+  config.CLIENT_SECRET,
+  config.EMAIL,
+  config.PASSWORD
 );
 const socket = new Socket(authorization);
 const thermostats = new Thermostats(socket); // mixes the business logic and data access layer but ...

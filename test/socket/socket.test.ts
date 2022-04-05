@@ -8,25 +8,20 @@ const mockAuthorizationObject = {
   login: jest.fn().mockResolvedValue(null),
   refreshAccessToken: jest.fn().mockResolvedValue(null),
   isRefreshTokenAvailable: jest.fn()
-}
-const mockAuthorization = jest.fn().mockImplementation(() => {
-  return mockAuthorizationObject;
-})
+};
+const mockAuthorization = jest.fn().mockImplementation(() => mockAuthorizationObject);
 import { Authorization } from '../../src/authorization';
-jest.mock('../../src/authorization', () => {
-  return {
-    Authorization: mockAuthorization
-  }
-});
 
+jest.mock('../../src/authorization', () => ({
+  Authorization: mockAuthorization
+}));
 
 // config mock
 // let mockEndpoint = faker.internet.url();
-let mockConfig = {
-  socket_endpoint: faker.internet.url()
+const mockConfig = {
+  SOCKET_ENDPOINT: faker.internet.url()
 };
 jest.mock('../../src/config', () => mockConfig);
-
 
 // socket-io client mock
 const mockSocketObject = {
@@ -34,9 +29,8 @@ const mockSocketObject = {
   close: jest.fn(),
   on: jest.fn()
 };
-let mockSocket = jest.fn(() => mockSocketObject);
+const mockSocket = jest.fn(() => mockSocketObject);
 jest.mock('socket.io-client', () => mockSocket);
-
 
 // socket helper mock
 const mockSocketHelperObject = {
@@ -45,10 +39,7 @@ const mockSocketHelperObject = {
   disconnectHandler: jest.fn()
 };
 const socketHelper = jest.fn().mockImplementation(() => mockSocketHelperObject);
-jest.mock('../../src/socket/socket_helper', () => {
-  return { SocketHelper: socketHelper };
-});
-
+jest.mock('../../src/socket/socket_helper', () => ({ SocketHelper: socketHelper }));
 
 import { Socket } from '../../src/socket/socket';
 
@@ -58,7 +49,9 @@ describe('socket', () => {
   let authorization;
 
   beforeEach(() => {
-    authorization = new Authorization('', '', '', '');
+    authorization = new Authorization(
+      '', '', '', ''
+    );
     mockSocketHelperObject.stateHandler.mockImplementation(() => true);
   });
 
@@ -97,12 +90,12 @@ describe('socket', () => {
   });
 
   test('creates socket connection and returns it', async () => {
-    let socketObject = new Socket(authorization);
+    const socketObject = new Socket(authorization);
 
     expect(await socketObject.startSocketConnection()).toEqual(mockSocketObject);
 
-    let mockArgs: Array<2> = mockSocket.mock.calls[0];
-    expect(mockArgs[0]).toBe(mockConfig.socket_endpoint);
+    const mockArgs: Array<2> = mockSocket.mock.calls[0];
+    expect(mockArgs[0]).toBe(mockConfig.SOCKET_ENDPOINT);
     expect(mockArgs[1]).toEqual({
       transports: ['websocket'],
       path: '/thermostat',
@@ -126,10 +119,10 @@ describe('socket', () => {
       const socketObject = new Socket(authorization);
 
       const connection = await socketObject.startSocketConnection();
-      const handler = connection.on.mock.calls.find(x => x[0] === 'connect')[1];
+      const handler = connection.on.mock.calls.find((x) => x[0] === 'connect')[1];
       await handler();
-      const stateHandler = connection.on.mock.calls.find(x => x[0] === 'state')[1];
-      await stateHandler('data')
+      const stateHandler = connection.on.mock.calls.find((x) => x[0] === 'state')[1];
+      await stateHandler('data');
 
       expect(mockSocketHelperObject.stateHandler).toHaveBeenCalledWith('data');
     });
@@ -144,14 +137,14 @@ describe('socket', () => {
     };
 
     const connection = await socketObject.startSocketConnection();
-    const handler = connection.on.mock.calls.find(x => x[0] === 'error')[1];
+    const handler = connection.on.mock.calls.find((x) => x[0] === 'error')[1];
     mockSocket.mockClear();
     mockSocketObject.close.mockClear();
     await handler(error);
 
-    let mockArgs: Array<2> = mockSocket.mock.calls[0];
+    const mockArgs: Array<2> = mockSocket.mock.calls[0];
     expect(mockSocketObject.close).toHaveBeenCalledBefore(mockSocket);
-    expect(mockArgs[0]).toBe(mockConfig.socket_endpoint);
+    expect(mockArgs[0]).toBe(mockConfig.SOCKET_ENDPOINT);
     expect(mockArgs[1]).toEqual({
       transports: ['websocket'],
       path: '/thermostat',

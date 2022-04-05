@@ -8,7 +8,7 @@ const clientId = faker.random.uuid();
 const clientSecret = faker.random.uuid();
 
 jest.mock('../src/config', () => ({
-  token_endpoint: tokenEndpoint
+  TOKEN_ENDPOINT: tokenEndpoint
 }));
 
 import { Authorization } from '../src/authorization';
@@ -19,7 +19,9 @@ describe('authorization', () => {
 
   describe('login', () => {
     beforeEach(() => {
-      authorization = new Authorization(clientId, clientSecret, email, password);
+      authorization = new Authorization(
+        clientId, clientSecret, email, password
+      );
     });
     afterEach(() => {
       nock.cleanAll();
@@ -62,10 +64,30 @@ describe('authorization', () => {
     });
 
     [
-      { property: 'clientId', auth: new Authorization(undefined, clientSecret, email, password) },
-      { property: 'clientSecret', auth: new Authorization(clientId, undefined, email, password) },
-      { property: 'email', auth: new Authorization(clientId, clientSecret, undefined, password) },
-      { property: 'password', auth: new Authorization(clientId, clientSecret, email, undefined) }
+      {
+        property: 'clientId',
+        auth: new Authorization(
+          undefined, clientSecret, email, password
+        )
+      },
+      {
+        property: 'clientSecret',
+        auth: new Authorization(
+          clientId, undefined, email, password
+        )
+      },
+      {
+        property: 'email',
+        auth: new Authorization(
+          clientId, clientSecret, undefined, password
+        )
+      },
+      {
+        property: 'password',
+        auth: new Authorization(
+          clientId, clientSecret, email, undefined
+        )
+      }
     ].forEach((testCase: { property: string, auth: Authorization }) => {
       test(`does not call login endpoint if ${testCase.property} is not set in the config`, async () => {
         const tokenNock = nock(tokenEndpoint)
@@ -99,7 +121,9 @@ describe('authorization', () => {
         })
         .reply(200, response);
 
-      authorization = new Authorization(clientId, clientSecret, email, password);
+      authorization = new Authorization(
+        clientId, clientSecret, email, password
+      );
       await authorization.login();
 
       nock.cleanAll();
