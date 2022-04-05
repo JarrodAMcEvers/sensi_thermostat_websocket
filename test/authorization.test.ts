@@ -1,16 +1,15 @@
 import * as faker from 'faker';
 import * as nock from 'nock';
 
-const token_endpoint = faker.internet.url();
+const tokenEndpoint = faker.internet.url();
 const email = faker.internet.userName();
 const password = faker.internet.password();
 const clientId = faker.random.uuid();
 const clientSecret = faker.random.uuid();
 
-const mockConfig = {
-  token_endpoint: token_endpoint,
-};
-jest.mock('../src/config', () => mockConfig);
+jest.mock('../src/config', () => ({
+  token_endpoint: tokenEndpoint
+}));
 
 import { Authorization } from '../src/authorization';
 
@@ -24,41 +23,41 @@ describe('authorization', () => {
     });
     afterEach(() => {
       nock.cleanAll();
-    })
+    });
 
     test('call endpoint and return token', async () => {
       const accessToken = faker.random.uuid();
       const refreshToken = faker.random.uuid();
       const response = { access_token: accessToken, refresh_token: refreshToken };
 
-      let tokenMock = nock(mockConfig.token_endpoint)
+      const tokenMock = nock(tokenEndpoint)
         .post('/token', {
           grant_type: 'password',
           client_id: clientId,
           client_secret: clientSecret,
           username: email,
-          password: password
+          password
         })
         .reply(200, response);
 
       await authorization.login();
 
-      expect(authorization.accessToken).toBe(accessToken)
-      expect(authorization.refreshToken).toBe(refreshToken)
+      expect(authorization.accessToken).toBe(accessToken);
+      expect(authorization.refreshToken).toBe(refreshToken);
       tokenMock.done();
     });
 
     test('rejects with error if request fails', async () => {
-      let error = faker.lorem.word();
-      nock(mockConfig.token_endpoint)
+      const error = faker.lorem.word();
+      nock(tokenEndpoint)
         .post('/token')
-        .reply(400, { error: error });
+        .reply(400, { error });
 
       try {
         await authorization.login();
         expect(true).toBeFalsy();
       } catch (err) {
-        expect(err).toEqual({ error: error });
+        expect(err).toEqual({ error });
       }
     });
 
@@ -69,7 +68,7 @@ describe('authorization', () => {
       { property: 'password', auth: new Authorization(clientId, clientSecret, email, undefined) }
     ].forEach((testCase: { property: string, auth: Authorization }) => {
       test(`does not call login endpoint if ${testCase.property} is not set in the config`, async () => {
-        const tokenNock = nock(mockConfig.token_endpoint)
+        const tokenNock = nock(tokenEndpoint)
           .post('/token')
           .reply(400, {});
 
@@ -77,7 +76,7 @@ describe('authorization', () => {
           await testCase.auth.login();
           expect(true).toBeFalsy();
         } catch (err) {
-          expect(err).toEqual({ message: 'Missing one or more of the required environment variables: CLIENT_ID, CLIENT_SECRET, EMAIL, PASSWORD.' });
+          expect(err).toEqual(new Error('Missing one or more of the required environment variables: CLIENT_ID, CLIENT_SECRET, EMAIL, PASSWORD.'));
           expect(tokenNock.isDone()).toBeFalsy();
         }
       });
@@ -90,13 +89,13 @@ describe('authorization', () => {
     const response = { access_token: accessToken, refresh_token: refreshToken };
 
     beforeEach(async () => {
-      nock(mockConfig.token_endpoint)
+      nock(tokenEndpoint)
         .post('/token', {
           grant_type: 'password',
           client_id: clientId,
           client_secret: clientSecret,
           username: email,
-          password: password
+          password
         })
         .reply(200, response);
 
@@ -109,7 +108,7 @@ describe('authorization', () => {
     test('refresh access token', async () => {
       const newAccessToken = faker.random.uuid();
 
-      let tokenMock = nock(mockConfig.token_endpoint)
+      const tokenMock = nock(tokenEndpoint)
         .post('/token', {
           grant_type: 'refresh_token',
           client_id: clientId,
@@ -126,16 +125,16 @@ describe('authorization', () => {
     });
 
     test('rejects with error if statusCode is a 400', async () => {
-      let error = faker.lorem.word();
-      nock(mockConfig.token_endpoint)
+      const error = faker.lorem.word();
+      nock(tokenEndpoint)
         .post('/token')
-        .reply(400, { error: error });
+        .reply(400, { error });
 
       try {
         await authorization.refreshAccessToken();
         expect(true).toBeFalsy();
       } catch (err) {
-        expect(err).toEqual({ error: error });
+        expect(err).toEqual({ error });
       }
     });
   });

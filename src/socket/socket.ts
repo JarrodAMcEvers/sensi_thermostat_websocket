@@ -1,8 +1,7 @@
-import { Authorization } from "../authorization";
-import { SocketHelper } from "./socket_helper";
-import * as config from "../config";
-import * as socketIO from "socket.io-client";
-import { SocketState } from "../types/types";
+import * as socketIO from 'socket.io-client';
+import { Authorization } from '../authorization';
+import { SocketHelper } from './socket_helper';
+import * as config from '../config';
 
 export class Socket {
   private authorization: Authorization;
@@ -31,13 +30,12 @@ export class Socket {
       await this.authorization.login();
     }
 
-    this.socketConnection = socketIO(config.socket_endpoint, {
-      transports: ["websocket"],
-      path: "/thermostat",
-      extraHeaders: {
-        Authorization: `Bearer ${this.authorization.accessToken}`,
-      },
-    });
+    this.socketConnection = socketIO(config.socket_endpoint,
+      {
+        transports: ['websocket'],
+        path: '/thermostat',
+        extraHeaders: { Authorization: `Bearer ${this.authorization.accessToken}` }
+      });
   }
 
   async startSocketConnection() {
@@ -59,10 +57,10 @@ export class Socket {
     // TODO: add reconnect logic
     this.socketConnection.on("disconnect", SocketHelper.disconnectHandler);
 
-    this.socketConnection.on("error", async (error: Error) => {
-      console.error("socket error", error);
-      if (error.message && error.message.indexOf("jwt expired") >= 0) {
-        console.log("access token is expired, reauthorizing");
+    this.socketConnection.on('error', async (error: Error) => {
+      console.error('socket error', error);
+      if (error.message && error.message.indexOf('jwt expired') >= 0) {
+        console.log('access token is expired, reauthorizing');
         this.socketConnection.close();
         await this.startSocketConnection();
       }

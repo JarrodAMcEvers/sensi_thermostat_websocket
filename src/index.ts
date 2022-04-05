@@ -3,9 +3,14 @@ import * as client from 'prom-client';
 import { Authorization } from "./authorization";
 import { Socket } from "./socket/socket";
 import { Thermostats } from "./Thermostat";
+import * as config from './config';
 
-
-const authorization = new Authorization();
+const authorization = new Authorization(
+  config.client_id,
+  config.client_secret,
+  config.email,
+  config.password
+);
 const socket = new Socket(authorization);
 const thermostats = new Thermostats(socket); // mixes the business logic and data access layer but ...
 let gateway = new client.Pushgateway('http://127.0.0.1:9091');

@@ -19,7 +19,7 @@ export interface SensiOAuthResponse {
   fleet_billing_option: string;
 }
 
-export interface Control {}
+export interface Control { }
 
 export interface DemandStatus {
   last_start?: Epoch;
