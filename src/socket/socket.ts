@@ -22,7 +22,7 @@ export class Socket {
       await this.authorization.login();
     }
 
-    this.socketConnection = socketIO(config.socket_endpoint,
+    this.socketConnection = socketIO(config.SOCKET_ENDPOINT,
       {
         transports: ['websocket'],
         path: '/thermostat',

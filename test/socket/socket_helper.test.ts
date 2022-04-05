@@ -8,7 +8,7 @@ jest.mock('socket.io-client', () => mockSocket);
 
 const mockEndpoint = faker.internet.url();
 const mockConfig = {
-  socket_endpoint: mockEndpoint
+  socketEndpoint: mockEndpoint
 };
 jest.mock('../../src/config', () => mockConfig);
 

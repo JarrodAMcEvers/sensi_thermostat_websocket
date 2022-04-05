@@ -12,9 +12,11 @@ export class Authorization {
   public accessToken: string = null;
   private refreshToken: string = null;
 
-  constructor(client_id: string, client_secret: string, email: string, password: string) {
-    this.clientId = client_id;
-    this.clientSecret = client_secret;
+  constructor(
+    clientId: string, clientSecret: string, email: string, password: string
+  ) {
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
     this.email = email;
     this.password = password;
   }
@@ -26,7 +28,7 @@ export class Authorization {
       }
 
       const response = await axios({
-        url: `${config.token_endpoint}/token`,
+        url: `${config.TOKEN_ENDPOINT}/token`,
         method: 'POST',
         data: {
           grant_type: 'password',
@@ -52,7 +54,7 @@ export class Authorization {
   public async refreshAccessToken(): Promise<void> {
     try {
       const response = await axios({
-        url: `${config.token_endpoint}/token`,
+        url: `${config.TOKEN_ENDPOINT}/token`,
         method: 'POST',
         data: {
           grant_type: 'refresh_token',
