@@ -1,13 +1,13 @@
 import { SocketState } from '../types/types';
 
 export class SocketHelper {
-  private _state: SocketState;
+  private thermostatState: SocketState;
   public get state() {
-    return this._state;
+    return this.thermostatState;
   }
 
   stateHandler(data: any): void {
-    this._state = <SocketState>data;
+    this.thermostatState = <SocketState>data;
     const datetime = new Date().toLocaleString().replace(',', '');
 
     console.log('received data at', datetime);

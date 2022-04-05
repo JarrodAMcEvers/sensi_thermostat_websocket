@@ -35,8 +35,11 @@ module.exports = {
     'import/prefer-default-export': [
       'off'
     ],
+    'class-methods-use-this': 'off',
     '@typescript-eslint/lines-between-class-members': ['off'],
     '@typescript-eslint/comma-dangle': ['off'],
-    '@typescript-eslint/return-await': ['off']
+    '@typescript-eslint/return-await': ['off'],
+    'import/first': 'off',
+    'function-paren-newline': ['error', { 'minItems': 3 }]
   }
 };

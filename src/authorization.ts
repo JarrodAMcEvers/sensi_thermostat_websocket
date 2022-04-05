@@ -22,7 +22,7 @@ export class Authorization {
   public async login(): Promise<void> {
     try {
       if (!this.clientId || !this.clientSecret || !this.email || !this.password) {
-        return Promise.reject({ message: 'Missing one or more of the required environment variables: CLIENT_ID, CLIENT_SECRET, EMAIL, PASSWORD.' });
+        return Promise.reject(new Error('Missing one or more of the required environment variables: CLIENT_ID, CLIENT_SECRET, EMAIL, PASSWORD.'));
       }
 
       const response = await axios({
@@ -42,6 +42,8 @@ export class Authorization {
 
       this.accessToken = body.access_token;
       this.refreshToken = body.refresh_token;
+
+      return await Promise.resolve();
     } catch (err) {
       return Promise.reject(err.response.data);
     }
@@ -63,6 +65,7 @@ export class Authorization {
       const body: SensiOAuthResponse = response.data;
 
       this.accessToken = body.access_token;
+      return await Promise.resolve();
     } catch (err) {
       return Promise.reject(err.response.data);
     }
