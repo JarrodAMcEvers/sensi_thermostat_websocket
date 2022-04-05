@@ -12,6 +12,10 @@ module.exports = {
     'sourceType': 'module',
     'project': './tsconfig.json'
   },
+  'ignorePatterns': [
+    '.eslintrc.js',
+    'coverage/'
+  ],
   'rules': {
     'indent': [
       'error',
