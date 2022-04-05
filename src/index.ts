@@ -20,18 +20,28 @@ socket.on("state", (data: any) => {
 
 const readTempatureSensorData = async (sensor) => {
   const { humidity,
-      temperature: temperatureC } = await sensor.readData();
+    temperature: temperatureC } = await sensor.readData();
   const temperatureF = temperatureC * 1.8 + 32;
   return { temperatureC, temperatureF, humidity };
 }
 
 const readTempatureSensorDataContiously = async (sensor) => {
+  let tempReadings = [];
   while (true) {
-      await sleep(1 * 60 * 1000);
-      const remoteSensorData = await readTempatureSensorData(sensor);
+    await sleep(1 * 1000);
+    const remoteSensorData = await readTempatureSensorData(sensor);
+    console.log(remoteSensorData.temperatureF);
+    // basic check for outlier data
+    if( ( remoteSensorData.temperatureF< 95 ) && ( remoteSensorData.temperatureF> 65 ))
+      tempReadings.push(remoteSensorData.temperatureF);
+    // after 60 temp readings, take the average and then perform the offset
+    if (tempReadings.length > 60) {
+      const avgTemps = average(tempReadings);
       thermostats.forEach(themostat => {
-        themostat.setThermostatTempToSensorTemp(remoteSensorData.temperatureF);
+        themostat.setThermostatTempToSensorTemp(avgTemps);
       })
+      tempReadings = [];
+    }
   }
 }
 
@@ -42,8 +52,10 @@ const main = async () => {
 
 const sleep = (duration) => {
   return new Promise((resolve) => {
-      setTimeout(resolve, duration)
+    setTimeout(resolve, duration)
   })
 }
+
+const average = (array) => array.reduce((a, b) => a + b) / array.length;
 
 main();
