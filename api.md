@@ -43,12 +43,27 @@ changes the thermostat operating mode to heat, cool, or off
 }
 ```
 
+### set_fan_mode
+
+used to set the fan to runnin
+
+#### Request
+
+##### Example body
+
+```json
+{
+  "icd_id": "0a-50-30-62-eb-18-ff-ff",
+  "value": "auto"
+}
+```
+
 ##### Fields
 
-| Field  | Data Type                         | Description                      |
-| ------ | --------------------------------- | -------------------------------- |
-| icd_id | string                            | identifier of the thermostat     |
-| mode   | enum<br>values:auto,heat,cool,off | operating mode of the thermostat |
+| Field  | Data Type              | Description                                |
+| ------ | ---------------------- | ------------------------------------------ |
+| icd_id | string                 | identifier of the thermostat               |
+| value  | enum<br>values:auto,on | fan turns on automatically or is always on |
 
 ### set_temp_offset
 
