@@ -40,9 +40,9 @@ const readTempatureSensorDataContiously = async (sensor) => {
   while (true) {
     await sleep(1 * 1000);
     const remoteSensorData = await readTempatureSensorData(sensor);
-    console.log(remoteSensorData.temperatureF);
+    // console.log(remoteSensorData.temperatureF);
     // basic check for outlier data
-    if( ( remoteSensorData.temperatureF< 95 ) && ( remoteSensorData.temperatureF> 65 ))
+    if ((remoteSensorData.temperatureF < 95) && (remoteSensorData.temperatureF > 65))
       tempReadings.push(remoteSensorData.temperatureF);
     // after 60 temp readings, take the average and then perform the offset
     if (tempReadings.length > 60) {
