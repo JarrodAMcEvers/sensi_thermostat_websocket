@@ -303,6 +303,7 @@ Gets the schedule for a thermostat.
 Update a schedule
 
 #### Request
+
 ```json
 {
   "name": "Heat",
@@ -353,9 +354,9 @@ Sets the active schedule for a thermostat.
 | icd_ids | array of thermostats | set of thermostat where the schedule is applied |
 | id      | number               | id of the schedule to activate                  |
 
-### set_compressor_lockout
+### set_early_start
 
-The compressor lockout prevents rapidly cycling on and off the compressor to prevent damage to the the AC compressor.
+When early start is turned on, the thermostat will attempt to reach the teampture by the scheduled time vs. start operating at the scheduled time.
 
 #### Request
 
@@ -363,17 +364,17 @@ The compressor lockout prevents rapidly cycling on and off the compressor to pre
 
 ```json
 {
-  "value": "on",
-  "icd_id": "0a-50-30-62-eb-18-ff-ff"
+  "icd_id": "0a-50-30-62-eb-18-ff-ff",
+  "value": "off"
 }
 ```
 
 #### Fields
 
-| Field  | Data Type                | Description                         |
-| ------ | ------------------------ | ----------------------------------- |
-| icd_id | string                   | identifier of the thermostat        |
-| value  | enum <br>values: on, off | is the compressor lockout on or off |
+| Field  | Data Type                | Description                   |
+| ------ | ------------------------ | ----------------------------- |
+| icd_id | string                   | identifier of the thermostat  |
+| value  | enum <br>values: on, off | sets if early start is on/off |
 
 ### set_display_scale
 
@@ -462,6 +463,164 @@ Sets if the backlight should be continuously on
 | ------ | ------------------------ | ----------------------------------------- |
 | icd_id | string                   | identifier of the thermostat              |
 | value  | enum <br>values: on, off | sets if the backlight should always be on |
+
+### set_keypad_lockout
+
+Sets if the keypad on the thermostat can be used.
+
+#### Request
+
+##### Example body
+
+```json
+{
+  "icd_id": "0a-50-30-62-eb-18-ff-ff",
+  "value": "off"
+}
+```
+
+#### Fields
+
+| Field  | Data Type                | Description                               |
+| ------ | ------------------------ | ----------------------------------------- |
+| icd_id | string                   | identifier of the thermostat              |
+| value  | enum <br>values: on, off | sets if the backlight should always be on |
+
+### set_cool_cycle_rate
+
+Sets how tight the cooling tempature range is for the thermostat. The `cool_cycle_rate` on the capbilities object determines if this can be adjusted and `cool_cycle_rate_steps` specifies what the valid values are.
+
+#### Request
+
+##### Example body
+
+```json
+{
+  "icd_id": "0a-50-30-62-eb-18-ff-ff",
+  "value": "fast"
+}
+```
+
+#### Fields
+
+| Field  | Data Type                           | Description                                                                    |
+| ------ | ----------------------------------- | ------------------------------------------------------------------------------ |
+| icd_id | string                              | identifier of the thermostat                                                   |
+| value  | enum <br>values: fast, medium, slow | sets the cycle rate (valid values found in capabilietes.cool_cycle_rate_steps) |
+
+### set_heat_cycle_rate
+
+Sets how tight the heating tempature range is for the thermostat. The `heat_cycle_rate` on the capbilities object determines if this can be adjusted and `heat_cycle_rate_steps` specifies what the valid values are.
+
+#### Request
+
+##### Example body
+
+```json
+{
+  "icd_id": "0a-50-30-62-eb-18-ff-ff",
+  "value": "fast"
+}
+```
+
+#### Fields
+
+| Field  | Data Type                           | Description                                                                    |
+| ------ | ----------------------------------- | ------------------------------------------------------------------------------ |
+| icd_id | string                              | identifier of the thermostat                                                   |
+| value  | enum <br>values: fast, medium, slow | sets the cycle rate (valid values found in capabilietes.heat_cycle_rate_steps) |
+
+### set_heat_boost
+
+Determines if heating boost is used.
+
+#### Request
+
+##### Example body
+
+```json
+{
+  "icd_id": "0a-50-30-62-eb-18-ff-ff",
+  "value": "off"
+}
+```
+
+#### Fields
+
+| Field  | Data Type                | Description                  |
+| ------ | ------------------------ | ---------------------------- |
+| icd_id | string                   | identifier of the thermostat |
+| value  | enum <br>values: on, off | sets if heat boost is on     |
+
+### set_cool_boost
+
+Determines if cool boosts is used.
+
+#### Request
+
+##### Example body
+
+```json
+{
+  "icd_id": "0a-50-30-62-eb-18-ff-ff",
+  "value": "off"
+}
+```
+
+#### Fields
+
+| Field  | Data Type                | Description                  |
+| ------ | ------------------------ | ---------------------------- |
+| icd_id | string                   | identifier of the thermostat |
+| value  | enum <br>values: on, off | sets if cool boost is on     |
+
+### set_compressor_lockout
+
+The compressor lockout prevents rapidly cycling on and off the compressor to prevent damage to the the AC compressor.
+
+#### Request
+
+##### Example body
+
+```json
+{
+  "value": "on",
+  "icd_id": "0a-50-30-62-eb-18-ff-ff"
+}
+```
+
+#### Fields
+
+| Field  | Data Type                | Description                         |
+| ------ | ------------------------ | ----------------------------------- |
+| icd_id | string                   | identifier of the thermostat        |
+| value  | enum <br>values: on, off | is the compressor lockout on or off |
+
+### get_info
+
+Gets device details
+
+#### Request
+
+##### Example body
+
+```json
+{
+  "test_date": "1/1/2020",
+  "build_date": "1/1/2020",
+  "serial_number": "123AB12A12345",
+  "unique_hardware_id": 1,
+  "model_number": "1A12A-12AB",
+  "images": {
+    "bootloader_version": "1234567890",
+    "firmware_version": "2345678901",
+    "wifi_version": "3456789012"
+  },
+  "wifi_mac_address": "0A503062EB18",
+  "last_changed_timestamp": 1649622983,
+  "icd_id": "0a-50-30-62-eb-18-ff-ff"
+}
+```
 
 ## Events/Topics
 
