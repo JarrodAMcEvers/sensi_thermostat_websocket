@@ -77,26 +77,26 @@ export class Thermostat {
   }
 
   setThermostatTempToSensorTemp(sensorTemperature: number) {
-    console.log(`Tempature used in thermostat: ${this.state.display_temp}`);
-    console.log(`Tempature at sensor: ${sensorTemperature}`);
+    // console.log(`Tempature used in thermostat: ${this.state.display_temp}`);
+    // console.log(`Tempature at sensor: ${sensorTemperature}`);
     const currentTempAtThermostatSensor = this.thermostatSensor_temp;
-    console.log(`Tempature at thermostat: ${currentTempAtThermostatSensor}`);
+    // console.log(`Tempature at thermostat: ${currentTempAtThermostatSensor}`);
     const temperatureDifference =
       sensorTemperature - currentTempAtThermostatSensor;
-    console.log(`Tempature difference between sensor and thermostat: ${temperatureDifference}`);
+    // console.log(`Tempature difference between sensor and thermostat: ${temperatureDifference}`);
     const currentTempOffset = this.state.temp_offset;
-    console.log(`Current offset: ${currentTempOffset}`);
+    // console.log(`Current offset: ${currentTempOffset}`);
     const scale = 2;
     const temperatureDifferenceRounded =
       Math.round(temperatureDifference * scale) / scale;
-    console.log(`Proposed offset: ${temperatureDifferenceRounded}`);
+    // console.log(`Proposed offset: ${temperatureDifferenceRounded}`);
     const absChangeInTempOffset = Math.abs(temperatureDifferenceRounded - currentTempOffset);
     if (absChangeInTempOffset < 1 || Math.abs(temperatureDifference - currentTempOffset) < 1) {
-      console.log("No change made");
+      // console.log("No change made");
       return;
     }
     console.log(`Changing offset by ${absChangeInTempOffset} to ${temperatureDifferenceRounded}`);
-    this.setThermostatOffset(temperatureDifferenceRounded);
+    // this.setThermostatOffset(temperatureDifferenceRounded);
   }
 
   setThermostatOffset(offset: number) {
