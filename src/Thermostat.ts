@@ -66,12 +66,11 @@ export class Thermostat {
     // merge the demand status objects if it's in the update
     if (stateUpdates.demand_status && this?.state?.demand_status) {
       const demand_status = { ...this.state.demand_status, ...stateUpdates.demand_status }
-      console.log(demand_status);
       stateUpdates.demand_status = demand_status;
     }
 
     const updatedState: any = this.state
-      ? Object.assign(this.state, stateUpdates)
+      ? { ...this.state, ...stateUpdates}
       : stateUpdates;
     this.state = updatedState;
   }

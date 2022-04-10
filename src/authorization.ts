@@ -40,7 +40,6 @@ export class Authorization {
       });
 
       const body: SensiOAuthResponse = response.data;
-      console.log('body', body);
 
       this.accessToken = body.access_token;
       this.refreshToken = body.refresh_token;
