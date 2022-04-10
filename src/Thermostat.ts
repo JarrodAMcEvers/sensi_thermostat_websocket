@@ -68,6 +68,13 @@ export class Thermostat {
       stateUpdates.demand_status = demandStatus;
     }
 
+    // merge the relay status objects if it's in the update
+    if (stateUpdates.relay_status && this?.state?.relay_status) {
+      const relayStatus = { ...this.state.relay_status, ...stateUpdates.relay_status };
+      // eslint-disable-next-line no-param-reassign
+      stateUpdates.relay_status = relayStatus;
+    }
+
     const updatedState: any = this.state
       ? { ...this.state, ...stateUpdates }
       : stateUpdates;
