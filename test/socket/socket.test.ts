@@ -2,19 +2,25 @@ import 'jest-extended';
 import * as faker from 'faker';
 
 // authorization mock
+import { Authorization } from '../../src/authorization';
+
 const accessToken = faker.random.uuid();
-const mockAuthorizationObject = {
+const mockAuthorizationImplementation = {
   accessToken,
   login: jest.fn().mockResolvedValue(null),
   refreshAccessToken: jest.fn().mockResolvedValue(null),
   isRefreshTokenAvailable: jest.fn()
 };
-const mockAuthorization = jest.fn().mockImplementation(() => mockAuthorizationObject);
-import { Authorization } from '../../src/authorization';
 
-jest.mock('../../src/authorization', () => ({
-  Authorization: mockAuthorization
-}));
+jest.mock('../../src/authorization', () => {
+  return {
+    Authorization: jest.fn().mockImplementation(() => {
+      return {
+        ...mockAuthorizationImplementation
+      }
+    })
+  }
+})
 
 // config mock
 // let mockEndpoint = faker.internet.url();
@@ -33,13 +39,10 @@ const mockSocket = jest.fn(() => mockSocketObject);
 jest.mock('socket.io-client', () => mockSocket);
 
 // socket helper mock
-const mockSocketHelperObject = {
-  state: '',
-  stateHandler: jest.fn(),
-  disconnectHandler: jest.fn()
-};
-const socketHelper = jest.fn().mockImplementation(() => mockSocketHelperObject);
-jest.mock('../../src/socket/socket_helper', () => ({ SocketHelper: socketHelper }));
+import { SocketHelper } from "../../src/socket/socket_helper"
+jest.mock('../../src/socket/socket_helper');
+SocketHelper.stateHandler = jest.fn().mockReturnValue('worked');
+SocketHelper.disconnectHandler = jest.fn().mockReturnValue('worked');
 
 import { Socket } from '../../src/socket/socket';
 
@@ -52,7 +55,6 @@ describe('socket', () => {
     authorization = new Authorization(
       '', '', '', ''
     );
-    mockSocketHelperObject.stateHandler.mockImplementation(() => true);
   });
 
   test('return socket connection if the socket is connected', async () => {
@@ -70,23 +72,21 @@ describe('socket', () => {
   });
 
   test('login if refresh token is not available', () => {
-    mockAuthorizationObject.isRefreshTokenAvailable.mockReturnValue(false);
+    authorization.isRefreshTokenAvailable.mockReturnValue(false);
     const socket = new Socket(authorization);
     socket.startSocketConnection();
-
-    expect(mockAuthorizationObject.login).toHaveBeenCalled();
-    expect(mockAuthorizationObject.refreshAccessToken).not.toHaveBeenCalled();
-    expect(mockAuthorizationObject.login).toHaveBeenCalledBefore(mockSocket);
+    expect(authorization.login).toHaveBeenCalled();
+    expect(authorization.refreshAccessToken).not.toHaveBeenCalled();
+    expect(authorization.login).toHaveBeenCalledBefore(mockSocket);
   });
 
   test('get new access token if a refresh token is available', () => {
-    mockAuthorizationObject.isRefreshTokenAvailable.mockReturnValue(true);
+    authorization.isRefreshTokenAvailable.mockReturnValue(true);
     const socket = new Socket(authorization);
     socket.startSocketConnection();
-
-    expect(mockAuthorizationObject.refreshAccessToken).toHaveBeenCalled();
-    expect(mockAuthorizationObject.login).not.toHaveBeenCalled();
-    expect(mockAuthorizationObject.refreshAccessToken).toHaveBeenCalledBefore(mockSocket);
+    expect(authorization.refreshAccessToken).toHaveBeenCalled();
+    expect(authorization.login).not.toHaveBeenCalled();
+    expect(authorization.refreshAccessToken).toHaveBeenCalledBefore(mockSocket);
   });
 
   test('creates socket connection and returns it', async () => {
@@ -108,9 +108,8 @@ describe('socket', () => {
 
     const connection = await socketObject.startSocketConnection();
 
-    expect(socketHelper).toHaveBeenCalled();
     expect(connection.on).toHaveBeenCalledWith('connect', expect.any(Function));
-    expect(connection.on).toHaveBeenCalledWith('disconnect', mockSocketHelperObject.disconnectHandler);
+    expect(connection.on).toHaveBeenCalledWith('disconnect', SocketHelper.disconnectHandler);
     expect(connection.on).toHaveBeenCalledWith('error', expect.any(Function));
   });
 
@@ -124,7 +123,7 @@ describe('socket', () => {
       const stateHandler = connection.on.mock.calls.find((x) => x[0] === 'state')[1];
       await stateHandler('data');
 
-      expect(mockSocketHelperObject.stateHandler).toHaveBeenCalledWith('data');
+      expect(SocketHelper.stateHandler).toHaveBeenCalledWith('data');
     });
   });
 

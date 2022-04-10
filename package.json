@@ -30,7 +30,8 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "testWatch": "jest --watchAll"
   },
   "jest": {
     "clearMocks": true,
@@ -43,6 +44,7 @@
     "preset": "ts-jest",
     "setupFilesAfterEnv": [
       "jest-extended/all"
-    ]
+    ],
+    "roots": ["./test"]
   }
 }
