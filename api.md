@@ -4,7 +4,7 @@
 
 ### set_temperature
 
-sets the temperature and mode for the thermostat
+sets the target temperature for a mode. This does not adjust the mode (i.e. it won't change from heat to cool)
 
 #### Request
 
