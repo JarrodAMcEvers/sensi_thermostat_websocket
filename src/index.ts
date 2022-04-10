@@ -37,7 +37,10 @@ socket.on('state', (data: any) => {
   thermostats.forEach((themostat) => {
     gaugeTemp.set({ room: 'top_of_stairs' }, themostat.thermostatSensor_temp);
     gaugeTemp.set({ room: 'upstairs_thermostat' }, themostat.thermostat_temp);
-    gaugeHVACRunning.set({ level: 'upstairs' }, +themostat.is_running);
+    gaugeHVACRunning.set({ level: 'upstairs', mode: 'system' }, +themostat.is_running);
+    gaugeHVACRunning.set({ level: 'upstairs', mode: 'heat' }, +themostat.is_running_heat);
+    gaugeHVACRunning.set({ level: 'upstairs', mode: 'auxheat' }, +themostat.is_running_auxheat);
+    gaugeHVACRunning.set({ level: 'upstairs', mode: 'cool' }, +themostat.is_running_cool);
   });
   gateway.pushAdd({ jobName: 'tempSensor' });
 });

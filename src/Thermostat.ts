@@ -40,15 +40,21 @@ export class Thermostat {
     return this.state.display_temp;
   }
 
-  // is the system running
+  // is the system cooling
   get is_running_cool(): boolean {
     return this.state?.demand_status?.cool > 1;
   }
 
-  // is the system running
+  // is the system heating
   get is_running_heat(): boolean {
     return this.state?.demand_status?.heat > 1;
   }
+
+  // is the system using aux heat
+  get is_running_auxheat(): boolean {
+    return this.state?.demand_status?.aux > 1;
+  }
+
   // is the system running
   get is_running(): boolean {
     const isRunning: boolean = this.is_running_cool || this.is_running_heat;
