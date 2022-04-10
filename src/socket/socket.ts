@@ -2,14 +2,13 @@ import * as socketIO from 'socket.io-client';
 import { Authorization } from '../authorization';
 import { SocketHelper } from './socket_helper';
 import * as config from '../config';
-import { Thermostats } from "../Thermostat";
 
 export class Socket {
   private authorization: Authorization;
   socketConnection: any = null;
   onListeners: any = [
     {
-      on: "state",
+      on: 'state',
       fn: (data: any) => {
         SocketHelper.stateHandler(data);
       },
@@ -42,8 +41,8 @@ export class Socket {
   async startSocketConnection() {
     await this.connectToSocket();
 
-    this.socketConnection.on("connect", () => {
-      console.log("connected");
+    this.socketConnection.on('connect', () => {
+      console.log('connected');
       /*
         Even if the access token is expired (it's valid for four hours),
         you will still get updates from the server about your thermostats.
@@ -56,7 +55,7 @@ export class Socket {
     });
 
     // TODO: add reconnect logic
-    this.socketConnection.on("disconnect", SocketHelper.disconnectHandler);
+    this.socketConnection.on('disconnect', SocketHelper.disconnectHandler);
 
     this.socketConnection.on('error', async (error: Error) => {
       console.error('socket error', error);

@@ -1,5 +1,5 @@
-import { Socket } from "./socket/socket";
-import { Registration } from "./types/types";
+import { Socket } from './socket/socket';
+import { Registration } from './types/types';
 
 export class Thermostat {
   readonly icd_id: string;
@@ -26,10 +26,9 @@ export class Thermostat {
 
     if (this.state.temp_offset === undefined) return NaN;
 
-    const thermostat_temp: number =
-      this.thermostat_temp - this.state.temp_offset;
+    const thermostatTemp: number = this.thermostat_temp - this.state.temp_offset;
 
-    return thermostat_temp;
+    return thermostatTemp;
   }
 
   // The temperature on the display
@@ -52,25 +51,25 @@ export class Thermostat {
   }
   // is the system running
   get is_running(): boolean {
-    const is_running: boolean = this.is_running_cool || this.is_running_heat;
-    return is_running;
+    const isRunning: boolean = this.is_running_cool || this.is_running_heat;
+    return isRunning;
   }
 
   update(stateUpdates: any) {
-    if (stateUpdates.registration)
-      this.registration = stateUpdates.registration;
+    if (stateUpdates.registration) this.registration = stateUpdates.registration;
     if (stateUpdates.state) this.updateState(stateUpdates.state);
   }
 
   updateState(stateUpdates: any) {
     // merge the demand status objects if it's in the update
     if (stateUpdates.demand_status && this?.state?.demand_status) {
-      const demand_status = { ...this.state.demand_status, ...stateUpdates.demand_status }
-      stateUpdates.demand_status = demand_status;
+      const demandStatus = { ...this.state.demand_status, ...stateUpdates.demand_status };
+      // eslint-disable-next-line no-param-reassign
+      stateUpdates.demand_status = demandStatus;
     }
 
     const updatedState: any = this.state
-      ? { ...this.state, ...stateUpdates}
+      ? { ...this.state, ...stateUpdates }
       : stateUpdates;
     this.state = updatedState;
   }
@@ -80,14 +79,12 @@ export class Thermostat {
     // console.log(`Tempature at sensor: ${sensorTemperature}`);
     const currentTempAtThermostatSensor = this.thermostatSensor_temp;
     // console.log(`Tempature at thermostat: ${currentTempAtThermostatSensor}`);
-    const temperatureDifference =
-      sensorTemperature - currentTempAtThermostatSensor;
+    const temperatureDifference = sensorTemperature - currentTempAtThermostatSensor;
     // console.log(`Tempature difference between sensor and thermostat: ${temperatureDifference}`);
     const currentTempOffset = this.state.temp_offset;
     // console.log(`Current offset: ${currentTempOffset}`);
     const scale = 2;
-    const temperatureDifferenceRounded =
-      Math.round(temperatureDifference * scale) / scale;
+    const temperatureDifferenceRounded = Math.round(temperatureDifference * scale) / scale;
     // console.log(`Proposed offset: ${temperatureDifferenceRounded}`);
     const absChangeInTempOffset = Math.abs(temperatureDifferenceRounded - currentTempOffset);
     if (absChangeInTempOffset < 1 || Math.abs(temperatureDifference - currentTempOffset) < 1) {
@@ -99,37 +96,14 @@ export class Thermostat {
   }
 
   setThermostatOffset(offset: number) {
-    this.socket.emit("set_temp_offset", {
+    this.socket.emit('set_temp_offset', {
       icd_id: this.icd_id,
       value: offset,
     });
+    // eslint-disable-next-line max-len
     // update the internal state just in case we don't get a response back before attempting the next update
     // TODO - really do state management and check for failures
     this.state.display_temp = this.thermostatSensor_temp + offset;
     this.state.temp_offset = offset;
-
-  }
-
-}
-
-export class Thermostats extends Map<string, Thermostat> {
-  socket: Socket = null;
-
-  constructor(socket: Socket, otherMap?: Map<string, Thermostat>) {
-    super(otherMap);
-    this.socket = socket;
-  }
-
-  updateThermostats(data: any) {
-    data.forEach((thermostatRaw) => {
-      let thermostat: Thermostat = null;
-      if (this.has(thermostatRaw.icd_id)) {
-        thermostat = this.get(thermostatRaw.icd_id);
-        thermostat.update(thermostatRaw);
-      } else {
-        thermostat = new Thermostat(this.socket, thermostatRaw);
-      }
-      this.set(thermostat.icd_id, thermostat);
-    });
   }
 }
