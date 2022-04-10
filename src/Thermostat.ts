@@ -20,18 +20,40 @@ export class Thermostat {
     if (socket) this.socket = socket;
   }
 
-  // The temperature read
-  get thermostatSensor_temp() {
+  // The temperature read at the thermostat
+  get thermostatSensor_temp(): number {
     if (!this.state) return NaN;
-
-    if (!this.state.display_temp) return NaN;
 
     if (this.state.temp_offset === undefined) return NaN;
 
     const thermostat_temp: number =
-      this.state.display_temp - this.state.temp_offset;
+      this.thermostat_temp - this.state.temp_offset;
 
     return thermostat_temp;
+  }
+
+  // The temperature on the display
+  get thermostat_temp(): number {
+    if (!this.state) return NaN;
+
+    if (!this.state.display_temp) return NaN;
+
+    return this.state.display_temp;
+  }
+
+  // is the system running
+  get is_running_cool(): boolean {
+    return this.state?.demand_status?.cool > 1;
+  }
+
+  // is the system running
+  get is_running_heat(): boolean {
+    return this.state?.demand_status?.heat > 1;
+  }
+  // is the system running
+  get is_running(): boolean {
+    const is_running: boolean = this.is_running_cool || this.is_running_heat;
+    return is_running;
   }
 
   update(stateUpdates: any) {

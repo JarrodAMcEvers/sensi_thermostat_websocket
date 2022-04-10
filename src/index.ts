@@ -1,4 +1,5 @@
 import * as aht20 from 'aht20-sensor';
+import * as client from 'prom-client';
 import { Authorization } from "./authorization";
 import { Socket } from "./socket/socket";
 import { Thermostats } from "./Thermostat";
@@ -7,6 +8,9 @@ import { Thermostats } from "./Thermostat";
 const authorization = new Authorization();
 const socket = new Socket(authorization);
 const thermostats = new Thermostats(socket); // mixes the business logic and data access layer but ...
+let gateway = new client.Pushgateway('http://127.0.0.1:9091');
+const gaugeTemp = new client.Gauge({ name: 'temp_ambient_f', help: 'the ambient tempature', labelNames: ['room'] });
+const gaugeHVACRunning = new client.Gauge({ name: 'hvac_running', help: 'indicates if the hvac is running', labelNames: ['level', 'mode'] });
 
 console.log("Starting socket connection with Sensi");
 socket.startSocketConnection().catch((err) => {
@@ -16,6 +20,12 @@ socket.startSocketConnection().catch((err) => {
 
 socket.on("state", (data: any) => {
   thermostats.updateThermostats(data);
+  thermostats.forEach(themostat => {
+    gaugeTemp.set({ room: 'top_of_stairs' }, themostat.thermostatSensor_temp);
+    gaugeTemp.set({ room: 'upstairs_thermostat' }, themostat.thermostat_temp);
+    gaugeHVACRunning.set({ level: 'upstairs' }, + themostat.is_running);
+  })
+  gateway.pushAdd({ jobName: 'tempSensor' })
 });
 
 const readTempatureSensorData = async (sensor) => {
@@ -37,9 +47,13 @@ const readTempatureSensorDataContiously = async (sensor) => {
     // after 60 temp readings, take the average and then perform the offset
     if (tempReadings.length > 60) {
       const avgTemps = average(tempReadings);
+      gaugeTemp.set({ room: 'office' }, avgTemps);
+      gateway.pushAdd({ jobName: 'tempSensor' })
+
       thermostats.forEach(themostat => {
         themostat.setThermostatTempToSensorTemp(avgTemps);
-      })
+      });
+
       tempReadings = [];
     }
   }
