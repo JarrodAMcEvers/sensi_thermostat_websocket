@@ -283,6 +283,39 @@ Gets the schedule for a thermostat.
 | name  | string                          | display name for the schedule              |
 | mode  | enum<br>values: auto, heat,cool | thermostat operating mode for the schedule |
 
+### update_schedule
+
+Update a schedule
+
+#### Request
+```json
+{
+  "name": "Heat",
+  "schedule": {
+    "fri": { "21:00": { "heat": 65 }, "06:15": { "heat": 70 } },
+    "wed": { "21:00": { "heat": 65 }, "06:15": { "heat": 70 } },
+    "thu": { "21:00": { "heat": 65 }, "06:15": { "heat": 70 } },
+    "sat": {
+      "06:15": { "heat": 70 },
+      "08:00": { "heat": 65 },
+      "17:00": { "heat": 68 },
+      "22:00": { "heat": 65 }
+    },
+    "tue": { "21:00": { "heat": 65 }, "06:15": { "heat": 70 } },
+    "mon": { "06:15": { "heat": 70 }, "21:00": { "heat": 65 } },
+    "sun": {
+      "14:00": { "heat": 70 },
+      "08:00": { "heat": 65 },
+      "17:00": { "heat": 65 },
+      "06:00": { "heat": 70 }
+    }
+  },
+  "id": 12345671,
+  "scale": "f",
+  "icd_id": "0a-50-30-62-eb-18-ff-ff"
+}
+```
+
 ### set_compressor_lockout
 
 The compressor lockout prevents rapidly cycling on and off the compressor to prevent damage to the the AC compressor.
