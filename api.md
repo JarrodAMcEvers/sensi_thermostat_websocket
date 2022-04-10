@@ -331,6 +331,28 @@ Update a schedule
 }
 ```
 
+## set_user_schedule_active
+
+Sets the active schedule for a thermostat.
+
+#### Request
+
+##### Example body
+
+```json
+{
+  "icd_ids": ["0a-50-30-62-eb-18-ff-ff"],
+  "id": 12345671
+}
+```
+
+#### Fields
+
+| Field   | Data Type            | Description                                     |
+| ------- | -------------------- | ----------------------------------------------- |
+| icd_ids | array of thermostats | set of thermostat where the schedule is applied |
+| id      | number               | id of the schedule to activate                  |
+
 ### set_compressor_lockout
 
 The compressor lockout prevents rapidly cycling on and off the compressor to prevent damage to the the AC compressor.
