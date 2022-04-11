@@ -1,6 +1,30 @@
 # Sensi Thermostats by Emerson API Documentation
+##
+APIs
+- [set temperature](#settemperature)
+- [set_operating_mode](#setoperatingmode)
+- [set_fan_mode](#setfanmode)
+- [set_temp_offset](#settempoffset)
+- [get_weather](#getweather)
+- [get_schedule_projection](#getscheduleprojection)
+- [get_schedules_with_limits](#getscheduleswithlimits)
+- [update_schedule](#updateschedule)
+- [set_early_start](#setearlystart)
+- [set_display_scale](#setdisplayscale)
+- [set_display_time](#setdisplaytime)
+- [set_display_humidity](#setdisplayhumidity)
+- [set_continuous_backlight](#setcontinuousbacklight)
+- [set_keypad_lockout](#setkeypadlockout)
+- [set_cool_cycle_rate](#setcoolcyclerate)
+- [set_heat_cycle_rate](#setheatcyclerate)
+- [set_heat_boost](#setheatboost)
+- [set_cool_boost](#setcoolboost)
+- [set_compressor_lockout](#setcompressorlockout)
+- [get_info](#getinfo)
+- [state](#state)
 
-### Emit/Publish
+
+## Emit/Publish
 
 ### set_temperature
 
