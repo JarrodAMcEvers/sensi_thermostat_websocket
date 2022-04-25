@@ -26,10 +26,10 @@
     "eslint": "^8.13.0",
     "eslint-config-airbnb-typescript": "^16.2.0",
     "faker": "4.1.0",
-    "jest": "27.3.0",
+    "jest": "^27.5.1",
     "jest-extended": "^1.1.0",
     "nock": "12.0.3",
-    "ts-jest": "27.0.7"
+    "ts-jest": "^27.1.4"
   },
   "scripts": {
     "start": "ts-node-esm src/index.ts",
@@ -44,8 +44,21 @@
       "json",
       "html"
     ],
+    "preset": "ts-jest/presets/default-esm",
+    "extensionsToTreatAsEsm": [
+      ".ts",
+      ".tsx"
+    ],
+    "testEnvironment": "node",
+    "globals": {
+      "ts-jest": {
+        "useESM": true
+      }
+    },
+    "moduleNameMapper": {
+      "(.*)\\.js$": "$1"
+    },
     "coverageDirectory": "./coverage/",
-    "preset": "ts-jest",
     "setupFilesAfterEnv": [
       "jest-extended/all"
     ],
