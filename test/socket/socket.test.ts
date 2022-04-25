@@ -1,8 +1,8 @@
 import 'jest-extended';
-import * as faker from 'faker';
+import faker from 'faker';
 
 // authorization mock
-import { Authorization } from '../../src/authorization';
+import { Authorization } from '../../src/authorization.js';
 
 const accessToken = faker.random.uuid();
 const mockAuthorizationImplementation = {
@@ -12,7 +12,7 @@ const mockAuthorizationImplementation = {
   isRefreshTokenAvailable: jest.fn()
 };
 
-jest.mock('../../src/authorization', () => {
+jest.mock('../../src/authorization.js', () => {
   return {
     Authorization: jest.fn().mockImplementation(() => {
       return {
@@ -27,7 +27,7 @@ jest.mock('../../src/authorization', () => {
 const mockConfig = {
   SOCKET_ENDPOINT: faker.internet.url()
 };
-jest.mock('../../src/config', () => mockConfig);
+jest.mock('../../src/config.js', () => mockConfig);
 
 // socket-io client mock
 const mockSocketObject = {
@@ -39,12 +39,12 @@ const mockSocket = jest.fn(() => mockSocketObject);
 jest.mock('socket.io-client', () => mockSocket);
 
 // socket helper mock
-import { SocketHelper } from "../../src/socket/socket_helper"
-jest.mock('../../src/socket/socket_helper');
+import { SocketHelper } from "../../src/socket/socket_helper.js"
+jest.mock('../../src/socket/socket_helper.js');
 SocketHelper.stateHandler = jest.fn().mockReturnValue('worked');
 SocketHelper.disconnectHandler = jest.fn().mockReturnValue('worked');
 
-import { Socket } from '../../src/socket/socket';
+import { Socket } from '../../src/socket/socket.js';
 
 describe('socket', () => {
   jest.setTimeout(2000);

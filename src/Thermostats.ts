@@ -1,5 +1,5 @@
-import { Socket } from './socket/socket';
-import { Thermostat } from './Thermostat';
+import { Socket } from './socket/socket.js';
+import { Thermostat } from './Thermostat.js';
 
 export class Thermostats extends Map<string, Thermostat> {
   socket: Socket = null;

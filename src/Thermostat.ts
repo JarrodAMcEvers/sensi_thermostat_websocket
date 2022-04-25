@@ -1,5 +1,5 @@
-import { Socket } from './socket/socket';
-import { Registration } from './types/types';
+import { Socket } from './socket/socket.js';
+import { Registration } from './types/types.js';
 
 export class Thermostat {
   readonly icd_id: string;

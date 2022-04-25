@@ -1,5 +1,5 @@
-import * as faker from 'faker';
-import * as nock from 'nock';
+import faker from 'faker';
+import nock from 'nock';
 
 const tokenEndpoint = faker.internet.url();
 const email = faker.internet.userName();
@@ -7,11 +7,11 @@ const password = faker.internet.password();
 const clientId = faker.random.uuid();
 const clientSecret = faker.random.uuid();
 
-jest.mock('../src/config', () => ({
+jest.mock('../src/config.js', () => ({
   TOKEN_ENDPOINT: tokenEndpoint
 }));
 
-import { Authorization } from '../src/authorization';
+import { Authorization } from '../src/authorization.js';
 
 describe('authorization', () => {
   jest.setTimeout(2000);

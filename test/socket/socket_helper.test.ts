@@ -1,4 +1,4 @@
-import { SocketHelper } from '../../src/socket/socket_helper';
+import { SocketHelper } from '../../src/socket/socket_helper.js';
 
 describe('socket_helper', () => {
   describe('stateHandler', () => {

@@ -1,7 +1,6 @@
-import { SensiOAuthResponse } from './types/types';
-import * as config from './config';
-// needed because of CommonJS module
-const axios = require('axios').default;
+import { SensiOAuthResponse } from './types/types.js';
+import * as config from './config.js';
+import axios from 'axios';
 
 export class Authorization {
   private clientId: string;

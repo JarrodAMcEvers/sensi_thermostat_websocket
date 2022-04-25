@@ -1,7 +1,7 @@
-import * as socketIO from 'socket.io-client';
-import { Authorization } from '../authorization';
-import { SocketHelper } from './socket_helper';
-import * as config from '../config';
+import socketIO from 'socket.io-client';
+import { Authorization } from '../authorization.js';
+import { SocketHelper } from './socket_helper.js';
+import * as config from '../config.js';
 
 export class Socket {
   private authorization: Authorization;
