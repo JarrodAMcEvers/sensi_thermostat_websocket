@@ -76,7 +76,7 @@ export class Thermostat {
     }
     const newState = _.merge(this.state,stateUpdates);
     this.state = newState;
-    }
+  }
 
   setThermostatTempToSensorTemp(sensorTemperature: number) {
     // CHECK: Ensure the temp isn't updated all the time
@@ -102,7 +102,7 @@ export class Thermostat {
     const lastEndTimeToCurrent : any = (currentDate.valueOf() - lastEndTime?.valueOf()) || 0 ;
     if( (lastEndTimeToCurrent) < 5 * 60 * 1000 ) {
       return;
-  }
+    }
 
     // CALCULATE: Determine the offset to apply 
     const currentTempAtThermostatSensor = this.thermostatSensor_temp;
