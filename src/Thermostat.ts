@@ -7,6 +7,7 @@ export class Thermostat {
   state: any;
   registration: Registration;
   socket: Socket = null;
+  lastTempUpdateToSensor: Date;
 
   constructor(socket: Socket, data: any) {
     if (data.icd_id !== undefined) {
@@ -77,38 +78,56 @@ export class Thermostat {
     this.state = newState;
     }
 
-    // merge the relay status objects if it's in the update
-    if (stateUpdates.relay_status && this?.state?.relay_status) {
-      const relayStatus = { ...this.state.relay_status, ...stateUpdates.relay_status };
-      // eslint-disable-next-line no-param-reassign
-      stateUpdates.relay_status = relayStatus;
-    }
-
-    const updatedState: any = this.state
-      ? { ...this.state, ...stateUpdates }
-      : stateUpdates;
-    this.state = updatedState;
-  }
-
   setThermostatTempToSensorTemp(sensorTemperature: number) {
-    // console.log(`Tempature used in thermostat: ${this.state.display_temp}`);
-    // console.log(`Tempature at sensor: ${sensorTemperature}`);
-    const currentTempAtThermostatSensor = this.thermostatSensor_temp;
-    // console.log(`Tempature at thermostat: ${currentTempAtThermostatSensor}`);
-    const temperatureDifference = sensorTemperature - currentTempAtThermostatSensor;
-    // console.log(`Tempature difference between sensor and thermostat: ${temperatureDifference}`);
-    const currentTempOffset = this.state.temp_offset;
-    // console.log(`Current offset: ${currentTempOffset}`);
-    const scale = 2;
-    const temperatureDifferenceRounded = Math.round(temperatureDifference * scale) / scale;
-    // console.log(`Proposed offset: ${temperatureDifferenceRounded}`);
-    const absChangeInTempOffset = Math.abs(temperatureDifferenceRounded - currentTempOffset);
-    if (absChangeInTempOffset < 1 || Math.abs(temperatureDifference - currentTempOffset) < 1) {
-      // console.log("No change made");
+    // CHECK: Ensure the temp isn't updated all the time
+    // when the last temp offset was less than 5 minutes ago, don't update again 
+    const currentDate : Date = new Date();
+    const lastUpdateToCurrent : any = (currentDate.valueOf() - this.lastTempUpdateToSensor?.valueOf()) || 0 ;
+    if( (lastUpdateToCurrent) < 5 * 60 * 1000 ) {
       return;
     }
+
+    // CHECK: Ensure the offset isn't changed just after the hvac starts to prevent short cycling
+    // Currently set to 10 minutes from start
+    const lastStartTime : Date = new Date(this?.state?.demand_status?.last_start * 1000) || null;
+    const lastStartToCurrent : any = (currentDate.valueOf() - lastStartTime?.valueOf()) || 0 ;
+    if( (lastStartToCurrent) < 10 * 60 * 1000 ) {
+      return;
+    }
+
+
+    // CHECK: Ensure the offset isn't changed just after the hvac stops to prevent short cycling
+    // Currently set to 5 minutes from the end time
+    const lastEndTime : Date = new Date(this?.state?.demand_status?.last_end * 1000) || null;
+    const lastEndTimeToCurrent : any = (currentDate.valueOf() - lastEndTime?.valueOf()) || 0 ;
+    if( (lastEndTimeToCurrent) < 5 * 60 * 1000 ) {
+      return;
+  }
+
+    // CALCULATE: Determine the offset to apply 
+    const currentTempAtThermostatSensor = this.thermostatSensor_temp;
+    const temperatureDifference = sensorTemperature - currentTempAtThermostatSensor;
+    const scale = 2;
+    const temperatureDifferenceRounded = Math.round(temperatureDifference * scale) / scale;
+    const currentTempOffset = this.state.temp_offset;
+    const absChangeInTempOffset = Math.abs(temperatureDifferenceRounded - currentTempOffset);
+
+    // DEBUG: Log the information
+    // console.log(`Tempature used in thermostat: ${this.state.display_temp}`);
+    // console.log(`Tempature at sensor: ${sensorTemperature}`);
+    // console.log(`Tempature at thermostat: ${currentTempAtThermostatSensor}`);
+    // console.log(`Tempature difference between sensor and thermostat: ${temperatureDifference}`);
+    // console.log(`Current offset: ${currentTempOffset}`);
+    // console.log(`Proposed offset: ${temperatureDifferenceRounded}`);
+    
+    // CHECK: Only change the temp if the difference is big enough 
+    if (absChangeInTempOffset <= 0.5) {
+      return;
+    }
+
     console.log(`Changing offset by ${absChangeInTempOffset} to ${temperatureDifferenceRounded}`);
-    // this.setThermostatOffset(temperatureDifferenceRounded);
+    this.setThermostatOffset(temperatureDifferenceRounded);
+  
   }
 
   setThermostatOffset(offset: number) {
