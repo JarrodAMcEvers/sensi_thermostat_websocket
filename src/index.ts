@@ -21,12 +21,16 @@ const sleep = (duration) => new Promise((resolve) => {
 
 const average = (array) => array.reduce((a, b) => a + b) / array.length;
 
+let globalSensor = null;
+
 const sensiSocket = new Socket(authorization);
 // eslint-disable-next-line max-len
 const thermostats = new Thermostats(sensiSocket); // mixes the business logic and data access layer but ...
-const gateway = new client.Pushgateway('http://127.0.0.1:9091');
+const register = new client.Registry();
 const gaugeTemp = new client.Gauge({ name: 'temp_ambient_f', help: 'the ambient temperature', labelNames: ['room'] });
+register.registerMetric(gaugeTemp);
 const gaugeHVACRunning = new client.Gauge({ name: 'hvac_running', help: 'indicates if the hvac is running', labelNames: ['level', 'mode'] });
+register.registerMetric(gaugeHVACRunning);
 
 console.log('Starting socket connection with Sensi');
 sensiSocket.startSocketConnection().catch((err) => {
@@ -57,17 +61,16 @@ const readTemperatureSensorDataContinuously = async (sensor) => {
   let tempReadings = [];
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    await sleep(1 * 1000);
+    await sleep(30 * 1000);
     const remoteSensorData = await readTemperatureSensorData(sensor);
     // console.log(remoteSensorData.temperatureF);
     // basic check for outlier data
     // eslint-disable-next-line max-len
     if ((remoteSensorData.temperatureF < 95) && (remoteSensorData.temperatureF > 65)) tempReadings.push(remoteSensorData.temperatureF);
-    // after 60 temp readings, take the average and then perform the offset
-    if (tempReadings.length > 60) {
+    // after 4 temp readings, take the average and then perform the offset
+    if (tempReadings.length > 4) {
       const avgTemps = average(tempReadings);
       gaugeTemp.set({ room: 'office' }, avgTemps);
-      gateway.pushAdd({ jobName: 'tempSensor' });
 
       thermostats.forEach((themostat) => {
         themostat.setThermostatTempToSensorTemp(avgTemps);
@@ -78,13 +81,42 @@ const readTemperatureSensorDataContinuously = async (sensor) => {
   }
 };
 
+const manageCirculatingFanSchedule = async () => {
+  while (true) {
+    const d = new Date();
+    thermostats.forEach(thermostat => {
+      const fanShouldBeOn = ((d.getHours()<19 && d.getHours() >= 12) && (d.getDay()>0 && d.getDay()<6 ) && thermostat.thermostat_temp > 70 ) ? true : false;
+      if(fanShouldBeOn!==thermostat.circulatingFanOn) {
+        thermostat.circulatingFanOn = fanShouldBeOn;
+        console.log("Changed Circulating Fan Status");
+      }
+    });
+    await sleep(5 * 60 * 1000);
+  }
+};
+
+app.get('/metrics', async (req, res) => {
+  res.setHeader('Content-Type', register.contentType);
+  res.send(await register.metrics());
+});
+
+app.get('/temp', async (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(JSON.stringify(await readTemperatureSensorData(globalSensor)));
+});
+
 const main = async () => {
+  https.createServer(options, app).listen(9091, () => console.log('Server is running on http://localhost:9091, metrics are exposed on http://localhost:9091/metrics'));
   const sensor = await aht20.open();
+  globalSensor = sensor;
   readTemperatureSensorDataContinuously(sensor);
-  nestThermostatListener('nest-device-access-345321', 'nestPull', gateway, gaugeTemp, gaugeHVACRunning);
+  nestThermostatListener('nest-device-access-345321', 'nestPull', gaugeTemp, gaugeHVACRunning);
   const tempFetcher = new OutsideAirTempFetcher();
   tempFetcher.start();
   tempFetcher.on('tempChange', (temp) => { gaugeTemp.set({ room: 'outside' }, temp); });
+
+  manageCirculatingFanSchedule();
+
 };
 
 main();
