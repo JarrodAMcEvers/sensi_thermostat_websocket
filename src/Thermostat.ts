@@ -119,4 +119,26 @@ export class Thermostat {
     this.state.display_temp = this.thermostatSensor_temp + offset;
     this.state.temp_offset = offset;
   }
+
+  get circulatingFanOn(): boolean {
+    return this.state?.circulating_fan?.enabled === "on"
+  }
+
+  set circulatingFanOn(onOff: boolean) {
+    const enabledValue = onOff ? "on" : "off";
+    const perOn = this.circulatingFanPer ? this.circulatingFanPer : 50;
+    this.socket.emit('set_circulating_fan', {
+      icd_id: this.icd_id,
+      value:
+      {
+        "duty_cycle": perOn,
+        "enabled": enabledValue
+      }
+    });
+  }
+
+  get circulatingFanPer(): number {
+    return this.state?.duty_cycle
+  }
+
 }
