@@ -1,5 +1,6 @@
 import { Socket } from './socket/socket.js';
 import { Registration } from './types/types.js';
+import _ from 'lodash';
 
 export class Thermostat {
   readonly icd_id: string;
@@ -67,11 +68,13 @@ export class Thermostat {
   }
 
   updateState(stateUpdates: any) {
-    // merge the demand status objects if it's in the update
-    if (stateUpdates.demand_status && this?.state?.demand_status) {
-      const demandStatus = { ...this.state.demand_status, ...stateUpdates.demand_status };
-      // eslint-disable-next-line no-param-reassign
-      stateUpdates.demand_status = demandStatus;
+    
+    // determine if the message indicates the thermostat is tunring off
+    if(this.is_running && (stateUpdates?.demand_status?.cool===0 || stateUpdates?.demand_status?.heat===0 ) ) {
+      stateUpdates.demand_status.lastEndTime = new Date();
+    }
+    const newState = _.merge(this.state,stateUpdates);
+    this.state = newState;
     }
 
     // merge the relay status objects if it's in the update
