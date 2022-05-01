@@ -98,11 +98,6 @@ describe('temperature updates', () => {
         expect(thermostat.thermostatSensor_temp).toEqual(72);
         expect(thermostat.thermostat_temp).toEqual(74);
     });
-    test('test temp after adding offset', () => {
-        thermostat.setThermostatOffset(-2);
-        expect(thermostat.thermostatSensor_temp).toEqual(75.5);
-        expect(thermostat.thermostat_temp).toEqual(73.5);
-    });
 })
 
 describe('temp setting offset', () => {
@@ -115,10 +110,12 @@ describe('temp setting offset', () => {
         thermostat = new Thermostat(socket, standardStartMessage);
     });
     test('test temp after adding offset', () => {
+        expect(thermostat.thermostatSensor_temp).toEqual(72);
+        expect(thermostat.thermostat_temp).toEqual(74);
         thermostat.setThermostatOffset(-2);
         // sensor hasn't changed but display temp has
-        expect(thermostat.thermostatSensor_temp).toEqual(75.5); 
-        expect(thermostat.thermostat_temp).toEqual(73.5);
+        expect(thermostat.thermostatSensor_temp).toEqual(72); 
+        expect(thermostat.thermostat_temp).toEqual(70);
         expect(socket.emit).toHaveBeenCalled();
     });
 })
