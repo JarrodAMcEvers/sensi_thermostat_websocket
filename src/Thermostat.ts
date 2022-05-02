@@ -7,7 +7,7 @@ export class Thermostat {
   state: any;
   registration: Registration;
   socket: Socket = null;
-  lastTempUpdateToSensor: Date;
+  dateOfLastTempOffsetChange: Date;
 
   constructor(socket: Socket, data: any) {
     if (data.icd_id !== undefined) {
@@ -69,41 +69,16 @@ export class Thermostat {
   }
 
   updateState(stateUpdates: any) {
-    
+
     // determine if the message indicates the thermostat is tunring off
     if(this.is_running && (stateUpdates?.demand_status?.cool===0 || stateUpdates?.demand_status?.heat===0 ) ) {
-      stateUpdates.demand_status.lastEndTime = new Date();
+      stateUpdates.demand_status.last_end = new Date();
     }
     const newState = _.merge(this.state,stateUpdates);
     this.state = newState;
   }
 
   setThermostatTempToSensorTemp(sensorTemperature: number) {
-    // CHECK: Ensure the temp isn't updated all the time
-    // when the last temp offset was less than 5 minutes ago, don't update again 
-    const currentDate : Date = new Date();
-    const lastUpdateToCurrent : any = (currentDate.valueOf() - this.lastTempUpdateToSensor?.valueOf()) || 0 ;
-    if( (lastUpdateToCurrent) < 5 * 60 * 1000 ) {
-      return;
-    }
-
-    // CHECK: Ensure the offset isn't changed just after the hvac starts to prevent short cycling
-    // Currently set to 10 minutes from start
-    const lastStartTime : Date = new Date(this?.state?.demand_status?.last_start * 1000) || null;
-    const lastStartToCurrent : any = (currentDate.valueOf() - lastStartTime?.valueOf()) || 0 ;
-    if( (lastStartToCurrent) < 10 * 60 * 1000 ) {
-      return;
-    }
-
-
-    // CHECK: Ensure the offset isn't changed just after the hvac stops to prevent short cycling
-    // Currently set to 5 minutes from the end time
-    const lastEndTime : Date = new Date(this?.state?.demand_status?.last_end * 1000) || null;
-    const lastEndTimeToCurrent : any = (currentDate.valueOf() - lastEndTime?.valueOf()) || 0 ;
-    if( (lastEndTimeToCurrent) < 5 * 60 * 1000 ) {
-      return;
-    }
-
     // CALCULATE: Determine the offset to apply 
     const currentTempAtThermostatSensor = this.thermostatSensor_temp;
     const temperatureDifference = sensorTemperature - currentTempAtThermostatSensor;
@@ -125,6 +100,35 @@ export class Thermostat {
       return;
     }
 
+    // CHECK: Ensure the temp isn't updated all the time
+    // when the last temp offset was less than 5 minutes ago, don't update again 
+    const currentDate : Date = new Date();
+    const assumedDuration = 10 * 60 * 1000;
+    const timeFromLastChangeToOffset : any = (currentDate.valueOf() - this.dateOfLastTempOffsetChange?.valueOf()) || assumedDuration;
+    if( (timeFromLastChangeToOffset) < 5 * 60 * 1000 ) {
+      console.log(`Offset not changed since it was updated recently (offset set ${this.dateOfLastTempOffsetChange} ms ago at ${timeFromLastChangeToOffset})`);
+      return;
+    }
+
+    // CHECK: Ensure the offset isn't changed just after the hvac starts to prevent short cycling
+    // Currently set to 10 minutes from start
+    const lastStartTime : Date = new Date(this.state.demand_status?.last_start * 1000) || null;
+    const timeSinceHVACLastStarted : any = (currentDate.valueOf() - lastStartTime?.valueOf()) || assumedDuration ;
+    if( (timeSinceHVACLastStarted) < 10 * 60 * 1000 ) {
+      console.log(`Offset not changed since HVAC started recently (offset set ${timeSinceHVACLastStarted} ms ago at ${lastStartTime})`);
+      return;
+    }
+
+
+    // CHECK: Ensure the offset isn't changed just after the hvac stops to prevent short cycling
+    // Currently set to 5 minutes from the end time
+    const lastEndTime : Date = new Date(this.state.demand_status?.last_end * 1000) || null;
+    const timeSinceHVACLastEnded : any = (currentDate.valueOf() - lastEndTime?.valueOf()) || assumedDuration ;
+    if( (timeSinceHVACLastEnded) < 5 * 60 * 1000 ) {
+      console.log(`Offset not changed since HVAC ended recently (offset set ${timeSinceHVACLastEnded} ms ago at ${lastEndTime})`);
+      return;
+    }
+
     console.log(`Changing offset by ${absChangeInTempOffset} to ${temperatureDifferenceRounded}`);
     this.setThermostatOffset(temperatureDifferenceRounded);
   
@@ -138,6 +142,7 @@ export class Thermostat {
     // eslint-disable-next-line max-len
     // update the internal state just in case we don't get a response back before attempting the next update
     // TODO - really do state management and check for failures
+    this.dateOfLastTempOffsetChange = new Date();
     this.state.display_temp = this.thermostatSensor_temp + offset;
     this.state.temp_offset = offset;
   }
