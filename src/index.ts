@@ -1,4 +1,7 @@
 /* eslint-disable no-await-in-loop */
+import express from 'express';
+import fs from 'fs';
+import https from 'https';
 import aht20 from 'aht20-sensor';
 import * as client from 'prom-client';
 import { Authorization } from './authorization.js';
@@ -7,6 +10,11 @@ import { Thermostats } from './Thermostats.js';
 import * as config from './config.js';
 import { nestThermostatListener } from './nestThermostatLister.js';
 import { OutsideAirTempFetcher } from './OutsideAirTempFetcher.js';
+import { Thermostat } from './Thermostat.js';
+
+const app = express();
+
+
 
 const authorization = new Authorization(
   config.CLIENT_ID,
