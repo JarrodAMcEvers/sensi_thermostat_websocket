@@ -48,7 +48,6 @@ sensiSocket.on('state', (data: any) => {
     gaugeHVACRunning.set({ level: 'upstairs', mode: 'auxheat' }, +themostat.is_running_auxheat);
     gaugeHVACRunning.set({ level: 'upstairs', mode: 'cool' }, +themostat.is_running_cool);
   });
-  gateway.pushAdd({ jobName: 'tempSensor' });
 });
 
 const readTemperatureSensorData = async (sensor) => {
