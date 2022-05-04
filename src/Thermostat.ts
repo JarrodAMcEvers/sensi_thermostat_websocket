@@ -106,7 +106,7 @@ export class Thermostat {
     const assumedDuration = 10 * 60 * 1000;
     const timeFromLastChangeToOffset : any = (currentDate.valueOf() - this.dateOfLastTempOffsetChange?.valueOf()) || assumedDuration;
     if( (timeFromLastChangeToOffset) < 5 * 60 * 1000 ) {
-      console.log(`Offset not changed since it was updated recently (offset set ${this.dateOfLastTempOffsetChange} ms ago at ${timeFromLastChangeToOffset})`);
+      console.log(`Offset not changed since it was updated recently (offset set ${timeFromLastChangeToOffset / 1000 / 60} min ago at ${this.dateOfLastTempOffsetChange})`);
       return;
     }
 
@@ -115,21 +115,21 @@ export class Thermostat {
     const lastStartTime : Date = new Date(this.state.demand_status?.last_start * 1000) || null;
     const timeSinceHVACLastStarted : any = (currentDate.valueOf() - lastStartTime?.valueOf()) || assumedDuration ;
     if( (timeSinceHVACLastStarted) < 10 * 60 * 1000 ) {
-      console.log(`Offset not changed since HVAC started recently (offset set ${timeSinceHVACLastStarted} ms ago at ${lastStartTime})`);
+      console.log(`Offset not changed since HVAC started recently (offset set ${timeSinceHVACLastStarted / 1000 / 60} min ago at ${lastStartTime})`);
       return;
     }
 
 
     // CHECK: Ensure the offset isn't changed just after the hvac stops to prevent short cycling
     // Currently set to 5 minutes from the end time
-    const lastEndTime : Date = new Date(this.state.demand_status?.last_end * 1000) || null;
+    const lastEndTime : Date = this.state.demand_status?.last_end || null;
     const timeSinceHVACLastEnded : any = (currentDate.valueOf() - lastEndTime?.valueOf()) || assumedDuration ;
     if( (timeSinceHVACLastEnded) < 5 * 60 * 1000 ) {
-      console.log(`Offset not changed since HVAC ended recently (offset set ${timeSinceHVACLastEnded} ms ago at ${lastEndTime})`);
+      console.log(`Offset not changed since HVAC ended recently (offset set ${timeSinceHVACLastEnded / 1000 / 60 } min ago at ${lastEndTime})`);
       return;
     }
 
-    console.log(`Changing offset by ${absChangeInTempOffset} to ${temperatureDifferenceRounded}`);
+    console.log(`Changed offset to ${temperatureDifferenceRounded}; temp at sensor - ${sensorTemperature}, temp at the thermostat - ${currentTempAtThermostatSensor}.`);
     this.setThermostatOffset(temperatureDifferenceRounded);
   
   }
