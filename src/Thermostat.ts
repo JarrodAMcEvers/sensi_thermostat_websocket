@@ -70,7 +70,7 @@ export class Thermostat {
 
   updateState(stateUpdates: any) {
 
-    // determine if the message indicates the thermostat is tunring off
+    // determine if the message indicates the thermostat is turning off
     if (this.is_running && (stateUpdates?.demand_status?.cool === 0 || stateUpdates?.demand_status?.heat === 0)) {
       stateUpdates.demand_status.last_end = new Date();
     }
@@ -88,15 +88,15 @@ export class Thermostat {
     const absChangeInTempOffset = Math.abs(temperatureDifferenceRounded - currentTempOffset);
 
     // DEBUG: Log the information
-    // console.log(`Tempature used in thermostat: ${this.state.display_temp}`);
-    // console.log(`Tempature at sensor: ${sensorTemperature}`);
-    // console.log(`Tempature at thermostat: ${currentTempAtThermostatSensor}`);
-    // console.log(`Tempature difference between sensor and thermostat: ${temperatureDifference}`);
+    // console.log(`Temperature used in thermostat: ${this.state.display_temp}`);
+    // console.log(`Temperature at sensor: ${sensorTemperature}`);
+    // console.log(`Temperature at thermostat: ${currentTempAtThermostatSensor}`);
+    // console.log(`Temperature difference between sensor and thermostat: ${temperatureDifference}`);
     // console.log(`Current offset: ${currentTempOffset}`);
     // console.log(`Proposed offset: ${temperatureDifferenceRounded}`);
 
     // CHECK: Only change the temp if the difference is big enough 
-    // and check that we're not just on the rounding point where we can see oscilation due to random noise
+    // and check that we're not just on the rounding point where we can see oscillation due to random noise
     if (absChangeInTempOffset <= 0.5 || Math.abs(temperatureDifference - currentTempOffset) <= (1 / (2 * scale) + 0.1)) {
       return;
     }
