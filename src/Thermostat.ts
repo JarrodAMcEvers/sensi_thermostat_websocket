@@ -96,7 +96,8 @@ export class Thermostat {
     // console.log(`Proposed offset: ${temperatureDifferenceRounded}`);
     
     // CHECK: Only change the temp if the difference is big enough 
-    if (absChangeInTempOffset <= 0.5) {
+    // and check that we're not just on the rounding point where we can see oscilation due to random noise
+    if (absChangeInTempOffset <= 0.5 || Math.abs(temperatureDifference - currentTempOffset) <= (1 / (2 * scale) + 0.1)) {
       return;
     }
 
