@@ -1,6 +1,6 @@
 import { SensiOAuthResponse } from './types/types.js';
 import * as config from './config.js';
-import axios from 'axios';
+// import axios from 'axios';
 
 export class Authorization {
   private clientId: string;
@@ -26,20 +26,23 @@ export class Authorization {
         return Promise.reject(new Error('Missing one or more of the required environment variables: CLIENT_ID, CLIENT_SECRET, EMAIL, PASSWORD.'));
       }
 
-      const response = await axios({
-        url: `${config.TOKEN_ENDPOINT}/token`,
+      const response = await globalThis.fetch(`${config.TOKEN_ENDPOINT}/token`, {
         method: 'POST',
-        data: {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
           grant_type: 'password',
           client_id: this.clientId,
           client_secret: this.clientSecret,
           username: this.email,
           password: this.password
-        }
+        })
       });
 
-      const body: SensiOAuthResponse = response.data;
 
+      const body: SensiOAuthResponse = await response.json();
       this.accessToken = body.access_token;
       this.refreshToken = body.refresh_token;
 
@@ -51,19 +54,21 @@ export class Authorization {
 
   public async refreshAccessToken(): Promise<void> {
     try {
-      const response = await axios({
-        url: `${config.TOKEN_ENDPOINT}/token`,
+      const response = await globalThis.fetch(`${config.TOKEN_ENDPOINT}/token`, {
         method: 'POST',
-        data: {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
           grant_type: 'refresh_token',
           client_id: this.clientId,
           client_secret: this.clientSecret,
           refresh_token: this.refreshToken
-        }
+        })
       });
 
-      const body: SensiOAuthResponse = response.data;
-
+      const body: SensiOAuthResponse = await response.json();
       this.accessToken = body.access_token;
       return await Promise.resolve();
     } catch (err) {
