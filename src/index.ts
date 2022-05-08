@@ -1,4 +1,5 @@
 /* eslint-disable no-await-in-loop */
+import 'dotenv/config';
 import express from 'express';
 import fs from 'fs';
 import https from 'https';
