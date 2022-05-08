@@ -109,10 +109,10 @@ describe('temp setting offset', () => {
         socket = new Socket(auth);
         thermostat = new Thermostat(socket, standardStartMessage);
     });
-    test('test temp after adding offset', () => {
+    test('test temp after adding offset', async () => {
         expect(thermostat.thermostatSensor_temp).toEqual(72);
         expect(thermostat.thermostat_temp).toEqual(74);
-        thermostat.setThermostatOffset(-2);
+        await thermostat.setThermostatOffset(-2);
         expect(thermostat.state.temp_offset).toEqual(-2); 
         // sensor hasn't changed but display temp has
         expect(thermostat.thermostatSensor_temp).toEqual(72);
@@ -121,13 +121,27 @@ describe('temp setting offset', () => {
         expect(socket.emit).toHaveBeenCalled();
     });
 
-    test('test temp after adding offset and receiving an update', () => {
-        thermostat.setThermostatOffset(-3.5);
-        const updateStateWithOffset = {"icd_id":"36-6f-92-ff-fe-1b-76-d7","state":{"status":"offline","temp_offset":-3.5,"control":{}},"capabilities":{"min_heat_setpoint":45,"min_cool_setpoint":45,"max_heat_setpoint":99,"max_cool_setpoint":99,"lowest_heat_setpoint_ceiling":60,"highest_cool_setpoint_floor":85}}
-        thermostat.update(updateStateWithOffset);
+    test('test temp after adding offset and receiving an update', async () => {
+        // start condition
         expect(thermostat.thermostatSensor_temp).toEqual(72);
-        expect(thermostat.state.display_temp).toEqual(68.5);
-        expect(thermostat.thermostat_temp).toEqual(68.5);
+        
+        // send update
+        await thermostat.setThermostatOffset(-3.0);
         expect(socket.emit).toHaveBeenCalled();
+
+        // state after emit
+        expect(thermostat.state.display_temp).toEqual(69);
+        expect(thermostat.thermostat_temp).toEqual(69);
+        expect(thermostat.thermostatSensor_temp).toEqual(72);
+
+        // response form server with update
+        const updateStateWithOffset = {"icd_id":"0a-50-30-62-eb-18-ff-ff","state":{"status":"online","temp_offset":-3.0,"control":{}},"capabilities":{"min_heat_setpoint":45,"min_cool_setpoint":45,"max_heat_setpoint":99,"max_cool_setpoint":99,"lowest_heat_setpoint_ceiling":60,"highest_cool_setpoint_floor":85}}
+        thermostat.update(updateStateWithOffset);
+
+        // check state is good
+        expect(thermostat.state.display_temp).toEqual(69);
+        expect(thermostat.thermostat_temp).toEqual(69);
+        expect(thermostat.thermostatSensor_temp).toEqual(72);
+        
     });
 })
