@@ -134,8 +134,8 @@ export class Thermostat {
   
   }
 
-  setThermostatOffset(offset: number) {
-    this.socket.emit('set_temp_offset', {
+  async setThermostatOffset(offset: number) {
+    await this.socket.emit('set_temp_offset', {
       icd_id: this.icd_id,
       value: offset,
     });
