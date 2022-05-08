@@ -114,7 +114,7 @@ export class Thermostat {
     // Currently set to 10 minutes from start
     const lastStartTime: Date = new Date(this.state.demand_status?.last_start * 1000) || null;
     const timeSinceHVACLastStarted: any = (currentDate.valueOf() - lastStartTime?.valueOf()) || assumedDuration;
-    if( (timeSinceHVACLastStarted) < 10 * 60 * 1000 ) {
+    if ((timeSinceHVACLastStarted) < 15 * 60 * 1000) {
       console.log(`Offset not changed since HVAC started recently (offset set ${timeSinceHVACLastStarted / 1000 / 60} min ago at ${lastStartTime})`);
       return;
     }
@@ -124,7 +124,7 @@ export class Thermostat {
     // Currently set to 5 minutes from the end time
     const lastEndTime: Date = this.state.demand_status?.last_end || null;
     const timeSinceHVACLastEnded: any = (currentDate.valueOf() - lastEndTime?.valueOf()) || assumedDuration;
-    if( (timeSinceHVACLastEnded) < 5 * 60 * 1000 ) {
+    if ((timeSinceHVACLastEnded) < 10 * 60 * 1000) {
       console.log(`Offset not changed since HVAC ended recently (offset set ${timeSinceHVACLastEnded / 1000 / 60} min ago at ${lastEndTime})`);
       return;
     }
