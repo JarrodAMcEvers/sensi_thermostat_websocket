@@ -33,6 +33,7 @@ export class OutsideAirTempFetcher {
   };
 
   start = async () => {
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       this.updateTempExternal();
       // eslint-disable-next-line no-await-in-loop

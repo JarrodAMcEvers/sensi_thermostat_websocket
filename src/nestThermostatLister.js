@@ -31,7 +31,7 @@ export const nestThermostatListener = async (
       return;
     }
 
-    const timeStamp = new Date(messageData.timestamp);
+    // const timeStamp = new Date(messageData.timestamp);
 
     console.log(JSON.stringify(messageData.resourceUpdate));
     const tempC = messageData?.resourceUpdate?.traits['sdm.devices.traits.Temperature']?.ambientTemperatureCelsius;
@@ -44,19 +44,19 @@ export const nestThermostatListener = async (
     const hvacRunningInfo = messageData?.resourceUpdate?.traits['sdm.devices.traits.ThermostatHvac']?.status;
 
     if (hvacRunningInfo) {
-      const is_running_heat = hvacRunningInfo === 'HEATING';
-      const is_running_auxheat = false;
-      const is_running_cool = hvacRunningInfo === 'COOLING';
-      const is_running = is_running_heat || is_running_auxheat || is_running_cool;
+      const isRunningHeat = hvacRunningInfo === 'HEATING';
+      const isRunningAuxHeat = false;
+      const isRunningCool = hvacRunningInfo === 'COOLING';
+      const isRunning = isRunningHeat || isRunningAuxHeat || isRunningCool;
       // console.log(hvacRunningInfo);
       // console.log(`HVAC Heat Run: ${is_running_heat} at ${timeStamp.toLocaleString()}`);
       // console.log(`HVAC Cool Run: ${is_running_cool}`);
       // console.log(`HVAC Run: ${is_running}`);
 
-      gaugeHVACRunning.set({ level: 'main', mode: 'heat' }, +is_running_heat);
-      gaugeHVACRunning.set({ level: 'main', mode: 'auxheat' }, +is_running_auxheat);
-      gaugeHVACRunning.set({ level: 'main', mode: 'cool' }, +is_running_cool);
-      gaugeHVACRunning.set({ level: 'main', mode: 'system' }, +is_running);
+      gaugeHVACRunning.set({ level: 'main', mode: 'heat' }, +isRunningHeat);
+      gaugeHVACRunning.set({ level: 'main', mode: 'auxheat' }, +isRunningAuxHeat);
+      gaugeHVACRunning.set({ level: 'main', mode: 'cool' }, +isRunningCool);
+      gaugeHVACRunning.set({ level: 'main', mode: 'system' }, +isRunning);
     }
 
     // "Ack" (acknowledge receipt of) the message
