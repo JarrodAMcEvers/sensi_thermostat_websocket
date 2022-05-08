@@ -22,8 +22,13 @@
     "@typescript-eslint/parser": "^5.18.0",
     "@typescript-eslint/typescript-estree": "^5.18.0",
     "@typescript-eslint/utils": "^5.18.0",
-    "eslint": "^8.13.0",
+    "eslint": "^8.15.0",
+    "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^16.2.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react-hooks": "^4.5.0",
     "faker": "4.1.0",
     "jest": "^27.5.1",
     "jest-extended": "^1.1.0",
@@ -34,7 +39,8 @@
     "start": "ts-node-esm src/index.ts",
     "build": "tsc",
     "test": "jest",
-    "testWatch": "jest --watchAll"
+    "testWatch": "jest --watchAll",
+    "lint": "eslint src/**"
   },
   "jest": {
     "clearMocks": true,
