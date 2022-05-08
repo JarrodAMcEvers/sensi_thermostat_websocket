@@ -82,7 +82,7 @@ export class Thermostat {
     // CALCULATE: Determine the offset to apply 
     const currentTempAtThermostatSensor = this.thermostatSensor_temp;
     const temperatureDifference = sensorTemperature - currentTempAtThermostatSensor;
-    const scale = 2;
+    const scale = 1;
     const temperatureDifferenceRounded = Math.round(temperatureDifference * scale) / scale;
     const currentTempOffset = this.state.temp_offset;
     const absChangeInTempOffset = Math.abs(temperatureDifferenceRounded - currentTempOffset);
@@ -94,7 +94,7 @@ export class Thermostat {
     // console.log(`Tempature difference between sensor and thermostat: ${temperatureDifference}`);
     // console.log(`Current offset: ${currentTempOffset}`);
     // console.log(`Proposed offset: ${temperatureDifferenceRounded}`);
-    
+
     // CHECK: Only change the temp if the difference is big enough 
     // and check that we're not just on the rounding point where we can see oscilation due to random noise
     if (absChangeInTempOffset <= 0.5 || Math.abs(temperatureDifference - currentTempOffset) <= (1 / (2 * scale) + 0.1)) {
@@ -132,7 +132,7 @@ export class Thermostat {
 
     console.log(`Changed offset to ${temperatureDifferenceRounded}; temp at sensor - ${sensorTemperature}, temp at the thermostat - ${currentTempAtThermostatSensor}.`);
     this.setThermostatOffset(temperatureDifferenceRounded);
-  
+
   }
 
   async setThermostatOffset(offset: number) {
