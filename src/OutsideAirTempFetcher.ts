@@ -3,7 +3,6 @@
 
 // import('node-fetch').then((module) => { fetch = module.default; });
 
-
 export const { OPEN_WEATHER_MAP_KEY, LAT, LON } = process.env;
 
 const sleep = (duration) => new Promise((resolve) => {

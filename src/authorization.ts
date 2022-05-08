@@ -29,7 +29,7 @@ export class Authorization {
       const response = await globalThis.fetch(`${config.TOKEN_ENDPOINT}/token`, {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -40,7 +40,6 @@ export class Authorization {
           password: this.password
         })
       });
-
 
       const body: SensiOAuthResponse = await response.json();
       this.accessToken = body.access_token;
@@ -57,7 +56,7 @@ export class Authorization {
       const response = await globalThis.fetch(`${config.TOKEN_ENDPOINT}/token`, {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({

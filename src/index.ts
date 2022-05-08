@@ -22,8 +22,8 @@ const average = (array) => array.reduce((a, b) => a + b) / array.length;
 
 const isWorkingTime = () => {
   const d = new Date();
-  return (d.getHours() < 19 && d.getHours() >= 9) && (d.getDay() > 0 && d.getDay() < 6)
-}
+  return (d.getHours() < 19 && d.getHours() >= 9) && (d.getDay() > 0 && d.getDay() < 6);
+};
 
 let globalSensor = null;
 
@@ -99,7 +99,7 @@ const setToRemoteThermostatTempContinuously = async () => {
     await sleep(30 * 1000);
     await setToRemoteThermostatTemp();
   }
-}
+};
 
 const setToRemoteThermostatTemp = async () => {
   if (isWorkingTime()) return; // don't use this during working hours
@@ -111,16 +111,16 @@ const setToRemoteThermostatTemp = async () => {
   thermostats.forEach((thermostat) => {
     thermostat.setThermostatTempToSensorTemp(data.temperatureF);
   });
-}
+};
 
 const manageCirculatingFanSchedule = async () => {
   while (true) {
     const d = new Date();
-    thermostats.forEach(thermostat => {
-      const fanShouldBeOn = ((d.getHours() < 19 && d.getHours() >= 12) && (d.getDay() > 0 && d.getDay() < 6) && thermostat.thermostat_temp > 70) ? true : false;
+    thermostats.forEach((thermostat) => {
+      const fanShouldBeOn = !!(((d.getHours() < 19 && d.getHours() >= 12) && (d.getDay() > 0 && d.getDay() < 6) && thermostat.thermostat_temp > 70));
       if (fanShouldBeOn !== thermostat.circulatingFanOn) {
         thermostat.circulatingFanOn = fanShouldBeOn;
-        console.log("Changed Circulating Fan Status");
+        console.log('Changed Circulating Fan Status');
       }
     });
     await sleep(5 * 60 * 1000);
@@ -142,7 +142,7 @@ app.get('/temp', async (req, res) => {
 });
 
 const main = async () => {
-  const certDir = `/etc/letsencrypt/live`;
+  const certDir = '/etc/letsencrypt/live';
   const options = {
     key: fs.readFileSync(`${certDir}/${DOMAIN}/privkey.pem`),
     cert: fs.readFileSync(`${certDir}/${DOMAIN}/fullchain.pem`)
@@ -152,14 +152,15 @@ const main = async () => {
   const sensor = await aht20.open();
   globalSensor = sensor;
   readTemperatureSensorDataContinuously(sensor);
-  nestThermostatListener('nest-device-access-345321', 'nestPull', gaugeTemp, gaugeHVACRunning);
+  nestThermostatListener(
+    'nest-device-access-345321', 'nestPull', gaugeTemp, gaugeHVACRunning
+  );
   const tempFetcher = new OutsideAirTempFetcher();
   tempFetcher.start();
   tempFetcher.on('tempChange', (temp) => { gaugeTemp.set({ room: 'outside' }, temp); });
 
   manageCirculatingFanSchedule();
   setToRemoteThermostatTempContinuously();
-
 };
 
 main();

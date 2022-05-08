@@ -1,6 +1,6 @@
+import _ from 'lodash';
 import { Socket } from './socket/socket.js';
 import { Registration } from './types/types.js';
-import _ from 'lodash';
 
 export class Thermostat {
   readonly icd_id: string;
@@ -69,7 +69,6 @@ export class Thermostat {
   }
 
   updateState(stateUpdates: any) {
-
     // determine if the message indicates the thermostat is turning off
     if (this.is_running && (stateUpdates?.demand_status?.cool === 0 || stateUpdates?.demand_status?.heat === 0)) {
       stateUpdates.demand_status.last_end = new Date();
@@ -79,7 +78,7 @@ export class Thermostat {
   }
 
   setThermostatTempToSensorTemp(sensorTemperature: number) {
-    // CALCULATE: Determine the offset to apply 
+    // CALCULATE: Determine the offset to apply
     const currentTempAtThermostatSensor = this.thermostatSensor_temp;
     const temperatureDifference = sensorTemperature - currentTempAtThermostatSensor;
     const scale = 1;
@@ -95,14 +94,14 @@ export class Thermostat {
     // console.log(`Current offset: ${currentTempOffset}`);
     // console.log(`Proposed offset: ${temperatureDifferenceRounded}`);
 
-    // CHECK: Only change the temp if the difference is big enough 
+    // CHECK: Only change the temp if the difference is big enough
     // and check that we're not just on the rounding point where we can see oscillation due to random noise
     if (absChangeInTempOffset <= 0.5 || Math.abs(temperatureDifference - currentTempOffset) <= (1 / (2 * scale) + 0.1)) {
       return;
     }
 
     // CHECK: Ensure the temp isn't updated all the time
-    // when the last temp offset was less than 5 minutes ago, don't update again 
+    // when the last temp offset was less than 5 minutes ago, don't update again
     const currentDate: Date = new Date();
     const assumedDuration = 10 * 60 * 1000;
     const timeFromLastChangeToOffset: any = (currentDate.valueOf() - this.dateOfLastTempOffsetChange?.valueOf()) || assumedDuration;
@@ -120,7 +119,6 @@ export class Thermostat {
       return;
     }
 
-
     // CHECK: Ensure the offset isn't changed just after the hvac stops to prevent short cycling
     // Currently set to 5 minutes from the end time
     const lastEndTime: Date = this.state.demand_status?.last_end || null;
@@ -132,7 +130,6 @@ export class Thermostat {
 
     console.log(`Changed offset to ${temperatureDifferenceRounded}; temp at sensor - ${sensorTemperature}, temp at the thermostat - ${currentTempAtThermostatSensor}.`);
     this.setThermostatOffset(temperatureDifferenceRounded);
-
   }
 
   async setThermostatOffset(offset: number) {
@@ -149,24 +146,23 @@ export class Thermostat {
   }
 
   get circulatingFanOn(): boolean {
-    return this.state?.circulating_fan?.enabled === "on"
+    return this.state?.circulating_fan?.enabled === 'on';
   }
 
   set circulatingFanOn(onOff: boolean) {
-    const enabledValue = onOff ? "on" : "off";
+    const enabledValue = onOff ? 'on' : 'off';
     const perOn = this.circulatingFanPer ? this.circulatingFanPer : 50;
     this.socket.emit('set_circulating_fan', {
       icd_id: this.icd_id,
       value:
       {
-        "duty_cycle": perOn,
-        "enabled": enabledValue
+        duty_cycle: perOn,
+        enabled: enabledValue
       }
     });
   }
 
   get circulatingFanPer(): number {
-    return this.state?.duty_cycle
+    return this.state?.duty_cycle;
   }
-
 }

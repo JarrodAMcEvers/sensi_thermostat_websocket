@@ -34,19 +34,19 @@ export const nestThermostatListener = async (
     const timeStamp = new Date(messageData.timestamp);
 
     console.log(JSON.stringify(messageData.resourceUpdate));
-    const tempC = messageData?.resourceUpdate?.traits['sdm.devices.traits.Temperature']?.ambientTemperatureCelsius
+    const tempC = messageData?.resourceUpdate?.traits['sdm.devices.traits.Temperature']?.ambientTemperatureCelsius;
     if (tempC) {
       const tempF = tempC * 1.8 + 32;
       // console.log(`Main temp: ${tempF} at ${timeStamp.toLocaleString()}`);
       gaugeTemp.set({ room: 'main_thermostat' }, tempF);
     }
 
-    const hvacRunningInfo = messageData?.resourceUpdate?.traits['sdm.devices.traits.ThermostatHvac']?.status
+    const hvacRunningInfo = messageData?.resourceUpdate?.traits['sdm.devices.traits.ThermostatHvac']?.status;
 
     if (hvacRunningInfo) {
       const is_running_heat = hvacRunningInfo === 'HEATING';
       const is_running_auxheat = false;
-      const is_running_cool = hvacRunningInfo === 'COOLING'
+      const is_running_cool = hvacRunningInfo === 'COOLING';
       const is_running = is_running_heat || is_running_auxheat || is_running_cool;
       // console.log(hvacRunningInfo);
       // console.log(`HVAC Heat Run: ${is_running_heat} at ${timeStamp.toLocaleString()}`);
